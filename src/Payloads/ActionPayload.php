@@ -72,13 +72,17 @@ final readonly class ActionPayload implements ActionPayloadInterface
      */
     public function jsonSerialize(): array
     {
-        return array_filter(
-            [
-                'data' => $this->data,
-                'error' => $this->error,
-            ],
-            static fn ($value) => $value !== null
-        );
+        $payload = [];
+
+        if ($this->data !== null) {
+            $payload['data'] = $this->data;
+        }
+
+        if ($this->error !== null) {
+            $payload['error'] = $this->error;
+        }
+
+        return $payload;
     }
 
     /**

@@ -31,6 +31,31 @@ final class ActionPayloadTest extends TestCase
     }
 
     /**
+     * Guards against dropping falsy values during serialization.
+     *
+     * @return void
+     */
+    public function testSuccessPayloadPreservesFalsyValues(): void
+    {
+        $payload = ActionPayload::success([
+            'false' => false,
+            'zero' => 0,
+            'empty' => '',
+        ]);
+
+        self::assertSame(
+            [
+                'data' => [
+                    'false' => false,
+                    'zero' => 0,
+                    'empty' => '',
+                ],
+            ],
+            $payload->jsonSerialize()
+        );
+    }
+
+    /**
      * Ensures error payloads expose status codes and embedded errors.
      *
      * @return void
