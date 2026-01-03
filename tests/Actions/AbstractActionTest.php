@@ -27,7 +27,7 @@ final class AbstractActionTest extends TestCase
         self::assertSame('application/json; charset=utf-8', $result->getHeaderLine('Content-Type'));
         self::assertSame(200, $result->getStatusCode());
 
-        $body = $result->getBody()->__toString();
+        $body = (string)$result->getBody();
         self::assertJson($body);
 
         $decoded = json_decode($body, true, 512, JSON_THROW_ON_ERROR);
