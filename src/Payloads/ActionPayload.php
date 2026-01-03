@@ -90,9 +90,6 @@ final readonly class ActionPayload implements ActionPayloadInterface
      */
     public function toJson(): string
     {
-        return json_encode(
-            $this,
-            JSON_THROW_ON_ERROR | JSON_PRETTY_PRINT
-        );
+        return json_encode($this, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
     }
 }

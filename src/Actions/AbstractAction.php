@@ -103,10 +103,7 @@ abstract class AbstractAction
      */
     protected function respondWithJson(ActionPayloadInterface $payload): ResponseInterface
     {
-        $json = json_encode(
-            $payload,
-            JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES
-        );
+        $json = json_encode($payload, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
 
         if ($json !== false) {
             $this->response->getBody()->write($json);
