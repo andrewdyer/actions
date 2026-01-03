@@ -8,8 +8,20 @@ use PHPUnit\Framework\TestCase;
 use Slim\ApiKernel\Payloads\ActionError;
 use Slim\ApiKernel\Payloads\ActionPayload;
 
+/**
+ * Validates ActionPayload factories and serialization guarantees.
+ *
+ * Role: Test. Ensures payloads expose stable status and body data.
+ *
+ * @internal
+ */
 final class ActionPayloadTest extends TestCase
 {
+    /**
+     * Confirms success payloads carry provided data and status codes.
+     *
+     * @return void
+     */
     public function testSuccessPayload(): void
     {
         $payload = ActionPayload::success(['foo' => 'bar'], 201);
@@ -18,6 +30,11 @@ final class ActionPayloadTest extends TestCase
         self::assertSame(['data' => ['foo' => 'bar']], $payload->jsonSerialize());
     }
 
+    /**
+     * Ensures error payloads expose status codes and embedded errors.
+     *
+     * @return void
+     */
     public function testErrorPayload(): void
     {
         $error = ActionError::serverError('Boom');
@@ -27,6 +44,11 @@ final class ActionPayloadTest extends TestCase
         self::assertSame(['error' => $error], $payload->jsonSerialize());
     }
 
+    /**
+     * Checks that toJson produces valid JSON matching the schema.
+     *
+     * @return void
+     */
     public function testToJsonProducesValidJson(): void
     {
         $payload = ActionPayload::success(['ok' => true]);

@@ -9,8 +9,20 @@ use Slim\Exception\HttpBadRequestException;
 use Slim\Psr7\Factory\ResponseFactory;
 use Slim\Psr7\Factory\ServerRequestFactory;
 
+/**
+ * Validates the AbstractAction helper behavior.
+ *
+ * Role: Test. Guards JSON responses and argument resolution.
+ *
+ * @internal
+ */
 final class AbstractActionTest extends TestCase
 {
+    /**
+     * Ensures respondWithJson writes headers and serialized payloads.
+     *
+     * @return void
+     */
     public function testRespondWithJsonWritesPayloadAndHeaders(): void
     {
         $serverRequestFactory = new ServerRequestFactory();
@@ -45,6 +57,11 @@ final class AbstractActionTest extends TestCase
         );
     }
 
+    /**
+     * Asserts resolveArg throws when required arguments are absent.
+     *
+     * @return void
+     */
     public function testResolveArgThrowsWhenMissing(): void
     {
         $serverRequestFactory = new ServerRequestFactory();

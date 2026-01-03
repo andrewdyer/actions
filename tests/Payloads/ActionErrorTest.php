@@ -7,10 +7,25 @@ namespace Slim\ApiKernel\Tests\Payloads;
 use PHPUnit\Framework\TestCase;
 use Slim\ApiKernel\Payloads\ActionError;
 
+/**
+ * Exercises the ActionError factory helpers and serialization.
+ *
+ * Role: Test. Prevents regressions across error payload variants.
+ *
+ * @internal
+ */
 final class ActionErrorTest extends TestCase
 {
     /**
+     * Ensures each factory emits the expected error metadata.
+     *
      * @dataProvider factoryProvider
+     *
+     * @param string $factoryMethod
+     * @param string $expectedType
+     * @param string|null $description
+     *
+     * @return void
      */
     public function testFactoryOutputs(string $factoryMethod, string $expectedType, ?string $description): void
     {
@@ -20,6 +35,11 @@ final class ActionErrorTest extends TestCase
         self::assertSame($description, $error->getDescription());
     }
 
+    /**
+     * Supplies representative factory scenarios.
+     *
+     * @return iterable<string, array{0:string,1:string,2:?string}>
+     */
     public static function factoryProvider(): iterable
     {
         yield 'bad request with description' => ['badRequest', ActionError::BAD_REQUEST, 'Invalid input'];
@@ -31,6 +51,11 @@ final class ActionErrorTest extends TestCase
         yield 'server error' => ['serverError', ActionError::SERVER_ERROR, 'Unexpected failure'];
     }
 
+    /**
+     * Verifies jsonSerialize emits the documented schema.
+     *
+     * @return void
+     */
     public function testJsonSerialization(): void
     {
         $error = ActionError::notFound();
