@@ -118,7 +118,7 @@ final class AbstractActionTest extends TestCase
         $responseFactory = new ResponseFactory();
         $response = $responseFactory->createResponse();
 
-        $action = new class extends AbstractAction {
+        $action = new class () extends AbstractAction {
             protected function handle(): ResponseInterface
             {
                 $invalidUtf8 = "\xB1";
