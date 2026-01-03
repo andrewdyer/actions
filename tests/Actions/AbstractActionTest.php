@@ -4,7 +4,11 @@ declare(strict_types=1);
 
 namespace Slim\ApiKernel\Tests\Actions;
 
+use JsonException;
 use PHPUnit\Framework\TestCase;
+use Psr\Http\Message\ResponseInterface;
+use Slim\ApiKernel\Actions\AbstractAction;
+use Slim\ApiKernel\Payloads\ActionPayload;
 use Slim\Exception\HttpBadRequestException;
 use Slim\Psr7\Factory\ResponseFactory;
 use Slim\Psr7\Factory\ServerRequestFactory;
@@ -97,6 +101,35 @@ final class AbstractActionTest extends TestCase
 
         $this->expectException(HttpBadRequestException::class);
         $this->expectExceptionMessage('Missing route argument: thingId');
+
+        $action($request, $response, []);
+    }
+
+    /**
+     * Ensures respondWithJson bubbles JsonException when encoding fails.
+     *
+     * @return void
+     */
+    public function testRespondWithJsonThrowsWhenEncodingFails(): void
+    {
+        $serverRequestFactory = new ServerRequestFactory();
+        $request = $serverRequestFactory->createServerRequest('GET', '/invalid');
+
+        $responseFactory = new ResponseFactory();
+        $response = $responseFactory->createResponse();
+
+        $action = new class extends AbstractAction {
+            protected function handle(): ResponseInterface
+            {
+                $invalidUtf8 = "\xB1";
+
+                return $this->respondWithJson(
+                    ActionPayload::success(['payload' => $invalidUtf8])
+                );
+            }
+        };
+
+        $this->expectException(JsonException::class);
 
         $action($request, $response, []);
     }
