@@ -58,6 +58,29 @@ final class AbstractActionTest extends TestCase
     }
 
     /**
+     * Ensures getParsedBody rejects unsupported payload types.
+     *
+     * @return void
+     */
+    public function testGetParsedBodyThrowsWhenBodyIsNotArray(): void
+    {
+        $serverRequestFactory = new ServerRequestFactory();
+        $request = $serverRequestFactory
+            ->createServerRequest('POST', '/things/42')
+            ->withParsedBody((object)['name' => 'Widget']);
+
+        $responseFactory = new ResponseFactory();
+        $response = $responseFactory->createResponse();
+
+        $action = new TestAction();
+
+        $this->expectException(HttpBadRequestException::class);
+        $this->expectExceptionMessage('Request body must decode to an array.');
+
+        $action($request, $response, ['thingId' => 42]);
+    }
+
+    /**
      * Asserts resolveArg throws when required arguments are absent.
      *
      * @return void

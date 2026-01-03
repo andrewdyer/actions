@@ -57,9 +57,20 @@ abstract class AbstractAction
      */
     protected function getParsedBody(): array
     {
-        $data = $this->request->getParsedBody() ?? [];
+        $data = $this->request->getParsedBody();
 
-        return is_array($data) ? $data : (array)$data;
+        if ($data === null) {
+            return [];
+        }
+
+        if (is_array($data)) {
+            return $data;
+        }
+
+        throw new HttpBadRequestException(
+            $this->request,
+            'Request body must decode to an array.'
+        );
     }
 
     /**
