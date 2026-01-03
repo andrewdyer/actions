@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace YourVendor\YourPackage;
+namespace Slim\ApiKernel;
 
 final class Example
 {

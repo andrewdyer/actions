@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace YourVendor\YourPackage\Tests;
+namespace Slim\ApiKernel\Tests;
 
 use PHPUnit\Framework\TestCase;
-use YourVendor\YourPackage\Example;
+use Slim\ApiKernel\Example;
 
 class ExampleTest extends TestCase
 {
