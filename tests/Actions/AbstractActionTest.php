@@ -31,6 +31,8 @@ final class AbstractActionTest extends TestCase
         self::assertJson($body);
 
         $decoded = json_decode($body, true, 512, JSON_THROW_ON_ERROR);
+        self::assertArrayHasKey('data', $decoded);
+        self::assertArrayNotHasKey('error', $decoded);
         self::assertSame(
             [
                 'data' => [
