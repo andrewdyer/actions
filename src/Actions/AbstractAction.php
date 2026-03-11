@@ -6,8 +6,8 @@ namespace Slim\ApiKernel\Actions;
 
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use RuntimeException;
 use Slim\ApiKernel\Payloads\ActionPayloadInterface;
-use Slim\Exception\HttpBadRequestException;
 
 /**
  * Base class for HTTP actions following the ADR pattern.
@@ -53,6 +53,8 @@ abstract class AbstractAction
     /**
      * Returns the parsed request body as an array.
      *
+     * @throws RuntimeException
+     *
      * @return array<mixed>
      */
     protected function getParsedBody(): array
@@ -67,10 +69,7 @@ abstract class AbstractAction
             return $data;
         }
 
-        throw new HttpBadRequestException(
-            $this->request,
-            'Request body must decode to an array.'
-        );
+        throw new RuntimeException('Request body must decode to an array.');
     }
 
     /**
@@ -78,17 +77,14 @@ abstract class AbstractAction
      *
      * @param string $name
      *
-     * @throws HttpBadRequestException
+     * @throws RuntimeException
      *
      * @return string|int
      */
     protected function resolveArg(string $name): string|int
     {
         if (!array_key_exists($name, $this->args)) {
-            throw new HttpBadRequestException(
-                $this->request,
-                "Missing route argument: {$name}"
-            );
+            throw new RuntimeException("Missing route argument: {$name}");
         }
 
         return $this->args[$name];
