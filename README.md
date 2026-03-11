@@ -9,6 +9,7 @@ This library adheres to standard HTTP messaging principles (PSR-compliant) and i
 ## 💡 Rationale
 
 Well-structured APIs benefit from consistent response formats and clear separation of concerns. By establishing clear patterns for success responses and error payloads, this library keeps action classes focused on domain logic while providing clients with predictable, well-structured JSON responses, regardless of the framework or HTTP layer used.
+
 ## 📥 Installation
 
 ```bash
@@ -26,7 +27,7 @@ Define an action that reads a route argument and returns either a success or err
 ```php
 declare(strict_types=1);
 
-namespace App\Application\Http\Actions;
+namespace App\Http\Actions;
 
 use Anddye\Actions\AbstractAction;
 use Anddye\Actions\Payloads\ActionError;
@@ -64,7 +65,7 @@ Wire the action into the Slim bootstrap so requests to `/ping/{mode}` are dispat
 ```php
 declare(strict_types=1);
 
-use App\Application\Http\Actions\PingAction;
+use App\Http\Actions\PingAction;
 use Slim\Factory\AppFactory;
 
 require __DIR__ . '/../vendor/autoload.php';
