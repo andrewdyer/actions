@@ -2,6 +2,10 @@
 
 PHP Slim helpers for abstract actions, consistent JSON responses, and structured API error payloads.
 
+## ✨ Introduction
+
+Slim API Kernel provides a straightforward way to build Action-Domain-Responder style HTTP endpoints in Slim 4 applications. The library offers an easy-to-use abstract action base for request argument and body handling, includes reusable payload objects for consistent JSON success and error responses, and supports clear, structured API error modeling. Additionally, it helps keep action classes focused and response formatting predictable across your application.
+
 ## Installation
 
 ```bash
