@@ -1,6 +1,6 @@
 # Slim API Kernel
 
-Framework-agnostic tools for building structured and predictable JSON APIs with an Action–Domain–Responder style approach.
+Framework-agnostic action utilities for building structured and predictable JSON API endpoints.
 
 ## ✨ Introduction
 
