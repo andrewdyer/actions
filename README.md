@@ -18,7 +18,7 @@ composer require andrewdyer/slim-api-kernel
 
 ## 🚀 Getting Started
 
-Below is a minimal Slim setup that exposes a simple endpoint using this package's action base class and payload helpers.
+Below is a minimal [Slim Framework 4](https://www.slimframework.com/) setup that exposes a simple endpoint using this package's action base class and payload helpers.
 
 ### 1. Create an action
 
