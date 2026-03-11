@@ -1,14 +1,14 @@
 # Slim API Kernel
 
-PHP [Slim Framework 4](https://www.slimframework.com/) helpers for abstract actions, consistent JSON responses, and structured API error payloads.
-
-## ⚖️ License
-
-Licensed under the [MIT license](https://opensource.org/licenses/MIT) and is free for private or commercial projects.
+Tools for building structured and predictable JSON APIs with [Slim Framework 4](https://www.slimframework.com/) using an Action–Domain–Responder style approach.
 
 ## ✨ Introduction
 
-Slim API Kernel provides a straightforward way to build Action-Domain-Responder style HTTP endpoints in Slim applications. The library offers an easy-to-use abstract action base for request argument and body handling, includes reusable payload objects for consistent JSON success and error responses, and supports clear, structured API error modeling. Additionally, it helps keep action classes focused and response formatting predictable across your application.
+Slim API Kernel provides a structured and predictable approach to building JSON APIs with Slim using the Action–Domain–Responder pattern. The library includes a small set of utilities that standardise how actions handle requests and how responses are returned, ensuring consistency across API endpoints.
+
+## 💡 Rationale
+
+Well-structured APIs benefit from consistent response formats and clear separation of concerns. By establishing clear patterns for success responses and error payloads, Slim API Kernel keeps action classes focused on domain logic while providing clients with predictable, well-structured JSON responses.
 
 ## 📥 Installation
 
