@@ -1,4 +1,4 @@
-# Actions
+# 🎬 Actions
 
 Framework-agnostic action utilities for building structured and predictable JSON API endpoints.
 
