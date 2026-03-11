@@ -1,6 +1,6 @@
 # Slim API Kernel
 
-PHP Slim helpers for abstract actions, consistent JSON responses, and structured API error payloads.
+PHP [Slim Framework 4](https://www.slimframework.com/) helpers for abstract actions, consistent JSON responses, and structured API error payloads.
 
 ## ⚖️ License
 
@@ -8,7 +8,7 @@ Licensed under the [MIT license](https://opensource.org/licenses/MIT) and is fre
 
 ## ✨ Introduction
 
-Slim API Kernel provides a straightforward way to build Action-Domain-Responder style HTTP endpoints in Slim 4 applications. The library offers an easy-to-use abstract action base for request argument and body handling, includes reusable payload objects for consistent JSON success and error responses, and supports clear, structured API error modeling. Additionally, it helps keep action classes focused and response formatting predictable across your application.
+Slim API Kernel provides a straightforward way to build Action-Domain-Responder style HTTP endpoints in Slim applications. The library offers an easy-to-use abstract action base for request argument and body handling, includes reusable payload objects for consistent JSON success and error responses, and supports clear, structured API error modeling. Additionally, it helps keep action classes focused and response formatting predictable across your application.
 
 ## 📥 Installation
 
@@ -18,9 +18,10 @@ composer require andrewdyer/slim-api-kernel
 
 ## 🚀 Getting Started
 
-Below is a minimal Slim 4 setup that exposes a simple endpoint using this package's action base class and payload helpers.
+Below is a minimal Slim setup that exposes a simple endpoint using this package's action base class and payload helpers.
 
 ### 1) Create an action
+
 Define an action that reads a route argument and returns either a success or error JSON payload.
 
 ```php
@@ -58,7 +59,8 @@ final class PingAction extends AbstractAction
 ```
 
 ### 2) Register the route
-Wire the action into your Slim 4 bootstrap so requests to `/ping/{mode}` are dispatched to the action class.
+
+Wire the action into your Slim bootstrap so requests to `/ping/{mode}` are dispatched to the action class.
 
 ```php
 declare(strict_types=1);
@@ -79,6 +81,7 @@ $app->run();
 ## Usage
 
 ### 1) Call the endpoint
+
 Once the route is registered, Slim will invoke your action and return the payload as JSON.
 
 ```
