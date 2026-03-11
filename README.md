@@ -1,5 +1,7 @@
 # Slim API Kernel
 
+PHP Slim helpers for abstract actions, consistent JSON responses, and structured API error payloads.
+
 ## Installation
 
 ```bash
