@@ -60,7 +60,7 @@ final class PingAction extends AbstractAction
 
 ### 2) Register the route
 
-Wire the action into your Slim bootstrap so requests to `/ping/{mode}` are dispatched to the action class.
+Wire the action into the Slim bootstrap so requests to `/ping/{mode}` are dispatched to the action class.
 
 ```php
 declare(strict_types=1);
