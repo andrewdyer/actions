@@ -1,6 +1,6 @@
 {
   "name": "andrewdyer/slim-api-kernel",
-  "description": "Tools for building structured and predictable JSON APIs with Slim Framework 4 using an Action–Domain–Responder style approach.",
+  "description": "Framework-agnostic tools for building structured and predictable JSON APIs with an Action–Domain–Responder style approach.",
   "type": "library",
   "autoload": {
     "psr-4": {

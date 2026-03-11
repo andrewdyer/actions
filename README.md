@@ -1,6 +1,6 @@
 # Slim API Kernel
 
-Tools for building structured and predictable JSON APIs with [Slim Framework 4](https://www.slimframework.com/) using an Action–Domain–Responder style approach.
+Framework-agnostic tools for building structured and predictable JSON APIs with an Action–Domain–Responder style approach.
 
 ## ✨ Introduction
 
