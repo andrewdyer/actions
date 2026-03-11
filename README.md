@@ -8,8 +8,7 @@ Slim API Kernel provides a structured and predictable approach to building JSON 
 
 ## 💡 Rationale
 
-Well-structured APIs benefit from consistent response formats and clear separation of concerns. By establishing clear patterns for success responses and error payloads, Slim API Kernel keeps action classes focused on domain logic while providing clients with predictable, well-structured JSON responses.
-
+Well-structured APIs benefit from consistent response formats and clear separation of concerns. By establishing clear patterns for success responses and error payloads, this library keeps action classes focused on domain logic while providing clients with predictable, well-structured JSON responses, regardless of the framework or HTTP layer used.
 ## 📥 Installation
 
 ```bash
