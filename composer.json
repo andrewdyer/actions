@@ -1,6 +1,6 @@
 {
   "name": "andrewdyer/slim-api-kernel",
-  "description": "",
+  "description": "PHP Slim helpers for abstract actions, consistent JSON responses, and structured API error payloads.",
   "type": "library",
   "autoload": {
     "psr-4": {
