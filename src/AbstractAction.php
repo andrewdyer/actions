@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Anddye\Actions\Actions;
+namespace Anddye\Actions;
 
 use Anddye\Actions\Payloads\ActionPayloadInterface;
 use JsonException;

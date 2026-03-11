@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Anddye\Actions\Tests\Actions;
+namespace Anddye\Actions\Tests;
 
-use Anddye\Actions\Actions\AbstractAction;
+use Anddye\Actions\AbstractAction;
 use Anddye\Actions\Payloads\ActionPayload;
 use Psr\Http\Message\ResponseInterface;
 

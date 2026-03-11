@@ -28,10 +28,10 @@ declare(strict_types=1);
 
 namespace App\Application\Http\Actions;
 
-use Psr\Http\Message\ResponseInterface;
-use Anddye\Actions\Actions\AbstractAction;
+use Anddye\Actions\AbstractAction;
 use Anddye\Actions\Payloads\ActionError;
 use Anddye\Actions\Payloads\ActionPayload;
+use Psr\Http\Message\ResponseInterface;
 
 final class PingAction extends AbstractAction
 {
