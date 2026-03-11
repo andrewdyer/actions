@@ -78,9 +78,7 @@ $app->get('/ping/{mode}', PingAction::class);
 $app->run();
 ```
 
-## Usage
-
-### 1) Call the endpoint
+## 📚 Usage
 
 Once the route is registered, Slim will invoke your action and return the payload as JSON.
 
