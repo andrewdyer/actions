@@ -4,7 +4,7 @@ Framework-agnostic tools for building structured and predictable JSON APIs with 
 
 ## ✨ Introduction
 
-Slim API Kernel provides a structured and predictable approach to building JSON APIs using the Action–Domain–Responder pattern. The library includes a small set of utilities that standardise how actions handle requests and responses, ensuring consistency across API endpoints.
+This library adheres to standard HTTP messaging principles (PSR-compliant) and includes a small set of utilities that standardise how actions handle requests and generate responses, ensuring consistency across API endpoints.
 
 ## 💡 Rationale
 
