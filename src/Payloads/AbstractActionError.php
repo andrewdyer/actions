@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Slim\ApiKernel\Payloads;
+namespace Anddye\Actions\Payloads;
 
 /**
  * Shared base for action error payloads.

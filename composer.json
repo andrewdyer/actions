@@ -4,12 +4,12 @@
   "type": "library",
   "autoload": {
     "psr-4": {
-      "Slim\\ApiKernel\\": "src/"
+      "Anddye\\Actions\\": "src/"
     }
   },
   "autoload-dev": {
     "psr-4": {
-      "Slim\\ApiKernel\\Tests\\": "tests/"
+      "Anddye\\Actions\\Tests\\": "tests/"
     }
   },
   "require": {

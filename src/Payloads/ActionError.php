@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Slim\ApiKernel\Payloads;
+namespace Anddye\Actions\Payloads;
 
 /**
  * Concrete payload enumerating standard action errors.

@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Slim\ApiKernel\Actions;
+namespace Anddye\Actions\Actions;
 
+use Anddye\Actions\Payloads\ActionPayloadInterface;
 use JsonException;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use RuntimeException;
-use Slim\ApiKernel\Payloads\ActionPayloadInterface;
 
 /**
  * Base class for HTTP actions following the ADR pattern.
@@ -56,7 +56,7 @@ abstract class AbstractAction
      *
      * @throws RuntimeException
      *
-     * @return array<mixed>
+     * @return array
      */
     protected function getParsedBody(): array
     {

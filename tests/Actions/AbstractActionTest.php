@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Slim\ApiKernel\Tests\Actions;
+namespace Anddye\Actions\Tests\Actions;
 
+use Anddye\Actions\Actions\AbstractAction;
+use Anddye\Actions\Payloads\ActionPayload;
 use JsonException;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ResponseInterface;
 use RuntimeException;
-use Slim\ApiKernel\Actions\AbstractAction;
-use Slim\ApiKernel\Payloads\ActionPayload;
 use Slim\Psr7\Factory\ResponseFactory;
 use Slim\Psr7\Factory\ServerRequestFactory;
 
