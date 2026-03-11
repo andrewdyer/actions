@@ -20,7 +20,7 @@ composer require andrewdyer/slim-api-kernel
 
 Below is a minimal Slim setup that exposes a simple endpoint using this package's action base class and payload helpers.
 
-### 1) Create an action
+### 1. Create an action
 
 Define an action that reads a route argument and returns either a success or error JSON payload.
 
@@ -58,7 +58,7 @@ final class PingAction extends AbstractAction
 }
 ```
 
-### 2) Register the route
+### 2. Register the route
 
 Wire the action into the Slim bootstrap so requests to `/ping/{mode}` are dispatched to the action class.
 
