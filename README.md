@@ -12,7 +12,7 @@ Well-structured APIs benefit from consistent response formats and clear separati
 ## 📥 Installation
 
 ```bash
-composer require andrewdyer/slim-api-kernel
+composer require andrewdyer/php-actions
 ```
 
 ## 🚀 Getting Started

@@ -1,5 +1,5 @@
 {
-  "name": "andrewdyer/slim-api-kernel",
+  "name": "andrewdyer/php-actions",
   "description": "Framework-agnostic tools for building structured and predictable JSON APIs with an Action–Domain–Responder style approach.",
   "type": "library",
   "autoload": {
