@@ -14,13 +14,13 @@
   },
   "require": {
     "php": "^8.3",
-    "psr/http-message": "^2.0",
-    "slim/slim": "^4.15"
+    "psr/http-message": "^2.0"
   },
   "require-dev": {
     "friendsofphp/php-cs-fixer": "^3.75",
     "phpunit/phpunit": "^10.5",
-    "slim/psr7": "^1.8"
+    "slim/psr7": "^1.8",
+    "slim/slim": "^4.15"
   },
   "scripts": {
     "cs": "php-cs-fixer fix",
