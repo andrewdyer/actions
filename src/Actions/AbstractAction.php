@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Slim\ApiKernel\Actions;
 
+use JsonException;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use RuntimeException;
@@ -94,6 +95,8 @@ abstract class AbstractAction
      * Serializes a payload to JSON and applies it to the response.
      *
      * @param ActionPayloadInterface $payload
+     *
+     * @throws RuntimeException|JsonException
      *
      * @return ResponseInterface
      */
