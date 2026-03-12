@@ -22,6 +22,10 @@
     "slim/psr7": "^1.8",
     "slim/slim": "^4.15"
   },
+  "suggest": {
+    "slim/slim": "Install to use Slim framework integrations with this library.",
+    "slim/psr7": "Install a Slim-compatible PSR-7 implementation for HTTP message handling."
+  },
   "scripts": {
     "cs": "php-cs-fixer fix",
     "test": "phpunit"
