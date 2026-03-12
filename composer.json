@@ -2,6 +2,7 @@
   "name": "andrewdyer/php-actions",
   "description": "Framework-agnostic action utilities for building structured and predictable JSON API endpoints",
   "type": "library",
+  "license": "MIT",
   "autoload": {
     "psr-4": {
       "Anddye\\Actions\\": "src/"
