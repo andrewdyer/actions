@@ -18,7 +18,9 @@ composer require andrewdyer/php-actions
 
 ## 🚀 Getting Started
 
-Below is a minimal [Slim Framework 4](https://www.slimframework.com/) setup that exposes a simple endpoint using this package's action base class and payload helpers.
+The examples below demonstrate how this library can be used with [Slim Framework 4](https://www.slimframework.com/). 
+
+> ⚠️ Slim and a PSR-7 implementation are not included as dependencies of this package and must be installed separately before running these examples.
 
 ### 1. Create an action
 
