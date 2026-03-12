@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Slim\ApiKernel\Tests\Payloads;
+namespace Anddye\Actions\Tests\Payloads;
 
+use Anddye\Actions\Payloads\ActionError;
 use PHPUnit\Framework\TestCase;
-use Slim\ApiKernel\Payloads\ActionError;
 
 /**
  * Exercises the ActionError factory helpers and serialization.

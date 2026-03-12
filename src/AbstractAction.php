@@ -2,12 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Slim\ApiKernel\Actions;
+namespace Anddye\Actions;
 
+use Anddye\Actions\Payloads\ActionPayloadInterface;
+use JsonException;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Slim\ApiKernel\Payloads\ActionPayloadInterface;
-use Slim\Exception\HttpBadRequestException;
+use RuntimeException;
 
 /**
  * Base class for HTTP actions following the ADR pattern.
@@ -53,7 +54,9 @@ abstract class AbstractAction
     /**
      * Returns the parsed request body as an array.
      *
-     * @return array<mixed>
+     * @throws RuntimeException
+     *
+     * @return array
      */
     protected function getParsedBody(): array
     {
@@ -67,10 +70,7 @@ abstract class AbstractAction
             return $data;
         }
 
-        throw new HttpBadRequestException(
-            $this->request,
-            'Request body must decode to an array.'
-        );
+        throw new RuntimeException('Request body must decode to an array.');
     }
 
     /**
@@ -78,17 +78,14 @@ abstract class AbstractAction
      *
      * @param string $name
      *
-     * @throws HttpBadRequestException
+     * @throws RuntimeException
      *
      * @return string|int
      */
     protected function resolveArg(string $name): string|int
     {
         if (!array_key_exists($name, $this->args)) {
-            throw new HttpBadRequestException(
-                $this->request,
-                "Missing route argument: {$name}"
-            );
+            throw new RuntimeException("Missing route argument: {$name}");
         }
 
         return $this->args[$name];
@@ -98,6 +95,8 @@ abstract class AbstractAction
      * Serializes a payload to JSON and applies it to the response.
      *
      * @param ActionPayloadInterface $payload
+     *
+     * @throws RuntimeException|JsonException
      *
      * @return ResponseInterface
      */

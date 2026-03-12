@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Slim\ApiKernel\Tests\Actions;
+namespace Anddye\Actions\Tests;
 
+use Anddye\Actions\AbstractAction;
+use Anddye\Actions\Payloads\ActionPayload;
 use Psr\Http\Message\ResponseInterface;
-use Slim\ApiKernel\Actions\AbstractAction;
-use Slim\ApiKernel\Payloads\ActionPayload;
 
 /**
  * Test double exercising the AbstractAction response helper.

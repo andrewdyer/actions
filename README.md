@@ -1,38 +1,40 @@
-# Slim API Kernel
+# 🎬 Actions
 
-Tools for building structured and predictable JSON APIs with [Slim Framework 4](https://www.slimframework.com/) using an Action–Domain–Responder style approach.
+Framework-agnostic action utilities for building structured and predictable JSON API endpoints.
 
 ## ✨ Introduction
 
-Slim API Kernel provides a structured and predictable approach to building JSON APIs with Slim using the Action–Domain–Responder pattern. The library includes a small set of utilities that standardise how actions handle requests and how responses are returned, ensuring consistency across API endpoints.
+This library adheres to standard HTTP messaging principles (PSR-compliant) and includes a small set of utilities that standardise how actions handle requests and generate responses, ensuring consistency across API endpoints.
 
 ## 💡 Rationale
 
-Well-structured APIs benefit from consistent response formats and clear separation of concerns. By establishing clear patterns for success responses and error payloads, Slim API Kernel keeps action classes focused on domain logic while providing clients with predictable, well-structured JSON responses.
+Well-structured APIs benefit from consistent response formats and clear separation of concerns. By establishing clear patterns for success responses and error payloads, this library keeps action classes focused on domain logic while providing clients with predictable, well-structured JSON responses, regardless of the framework or HTTP layer used.
 
 ## 📥 Installation
 
 ```bash
-composer require andrewdyer/slim-api-kernel
+composer require andrewdyer/php-actions
 ```
 
 ## 🚀 Getting Started
 
-Below is a minimal Slim setup that exposes a simple endpoint using this package's action base class and payload helpers.
+The examples below demonstrate how this library can be used with [Slim Framework 4](https://www.slimframework.com/). 
+
+> ⚠️ Slim and a PSR-7 implementation are not included as dependencies of this package and must be installed separately before running these examples.
 
 ### 1. Create an action
 
-Define an action that reads a route argument and returns either a success or error JSON payload.
+The action below reads a route argument and returns either a success or error JSON payload.
 
 ```php
 declare(strict_types=1);
 
-namespace App\Application\Http\Actions;
+namespace App\Http\Actions;
 
+use Anddye\Actions\AbstractAction;
+use Anddye\Actions\Payloads\ActionError;
+use Anddye\Actions\Payloads\ActionPayload;
 use Psr\Http\Message\ResponseInterface;
-use Slim\ApiKernel\Actions\AbstractAction;
-use Slim\ApiKernel\Payloads\ActionError;
-use Slim\ApiKernel\Payloads\ActionPayload;
 
 final class PingAction extends AbstractAction
 {
@@ -60,12 +62,12 @@ final class PingAction extends AbstractAction
 
 ### 2. Register the route
 
-Wire the action into the Slim bootstrap so requests to `/ping/{mode}` are dispatched to the action class.
+The action is wired into the Slim bootstrap so requests to `/ping/{mode}` are dispatched to the action class.
 
 ```php
 declare(strict_types=1);
 
-use App\Application\Http\Actions\PingAction;
+use App\Http\Actions\PingAction;
 use Slim\Factory\AppFactory;
 
 require __DIR__ . '/../vendor/autoload.php';

@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Slim\ApiKernel\Tests\Payloads;
+namespace Anddye\Actions\Tests\Payloads;
 
+use Anddye\Actions\Payloads\ActionError;
+use Anddye\Actions\Payloads\ActionPayload;
 use PHPUnit\Framework\TestCase;
-use Slim\ApiKernel\Payloads\ActionError;
-use Slim\ApiKernel\Payloads\ActionPayload;
 
 /**
  * Validates ActionPayload factories and serialization guarantees.

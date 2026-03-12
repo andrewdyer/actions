@@ -1,26 +1,30 @@
 {
-  "name": "andrewdyer/slim-api-kernel",
-  "description": "Tools for building structured and predictable JSON APIs with Slim Framework 4 using an Action–Domain–Responder style approach.",
+  "name": "andrewdyer/php-actions",
+  "description": "Framework-agnostic action utilities for building structured and predictable JSON API endpoints",
   "type": "library",
   "autoload": {
     "psr-4": {
-      "Slim\\ApiKernel\\": "src/"
+      "Anddye\\Actions\\": "src/"
     }
   },
   "autoload-dev": {
     "psr-4": {
-      "Slim\\ApiKernel\\Tests\\": "tests/"
+      "Anddye\\Actions\\Tests\\": "tests/"
     }
   },
   "require": {
     "php": "^8.3",
-    "psr/http-message": "^2.0",
-    "slim/slim": "^4.15"
+    "psr/http-message": "^2.0"
   },
   "require-dev": {
     "friendsofphp/php-cs-fixer": "^3.75",
     "phpunit/phpunit": "^10.5",
-    "slim/psr7": "^1.8"
+    "slim/psr7": "^1.8",
+    "slim/slim": "^4.15"
+  },
+  "suggest": {
+    "slim/slim": "Install to use Slim framework integrations with this library.",
+    "slim/psr7": "Install a Slim-compatible PSR-7 implementation for HTTP message handling."
   },
   "scripts": {
     "cs": "php-cs-fixer fix",

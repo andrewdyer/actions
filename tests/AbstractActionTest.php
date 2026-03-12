@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Slim\ApiKernel\Tests\Actions;
+namespace Anddye\Actions\Tests;
 
+use Anddye\Actions\AbstractAction;
+use Anddye\Actions\Payloads\ActionPayload;
 use JsonException;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ResponseInterface;
-use Slim\ApiKernel\Actions\AbstractAction;
-use Slim\ApiKernel\Payloads\ActionPayload;
-use Slim\Exception\HttpBadRequestException;
+use RuntimeException;
 use Slim\Psr7\Factory\ResponseFactory;
 use Slim\Psr7\Factory\ServerRequestFactory;
 
@@ -78,7 +78,7 @@ final class AbstractActionTest extends TestCase
 
         $action = new TestAction();
 
-        $this->expectException(HttpBadRequestException::class);
+        $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('Request body must decode to an array.');
 
         $action($request, $response, ['thingId' => 42]);
@@ -99,7 +99,7 @@ final class AbstractActionTest extends TestCase
 
         $action = new TestAction();
 
-        $this->expectException(HttpBadRequestException::class);
+        $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('Missing route argument: thingId');
 
         $action($request, $response, []);
