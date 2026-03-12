@@ -24,7 +24,7 @@ The examples below demonstrate how this library can be used with [Slim Framework
 
 ### 1. Create an action
 
-Define an action that reads a route argument and returns either a success or error JSON payload.
+The action below reads a route argument and returns either a success or error JSON payload.
 
 ```php
 declare(strict_types=1);
@@ -62,7 +62,7 @@ final class PingAction extends AbstractAction
 
 ### 2. Register the route
 
-Wire the action into the Slim bootstrap so requests to `/ping/{mode}` are dispatched to the action class.
+The action is wired into the Slim bootstrap so requests to `/ping/{mode}` are dispatched to the action class.
 
 ```php
 declare(strict_types=1);
