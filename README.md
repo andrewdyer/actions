@@ -4,11 +4,7 @@ Framework-agnostic action utilities for building structured and predictable JSON
 
 ## ✨ Introduction
 
-This library adheres to standard HTTP messaging principles (PSR-compliant) and includes a small set of utilities that standardise how actions handle requests and generate responses, ensuring consistency across API endpoints.
-
-## 💡 Rationale
-
-Well-structured APIs benefit from consistent response formats and clear separation of concerns. By establishing clear patterns for success responses and error payloads, this library keeps action classes focused on domain logic while providing clients with predictable, well-structured JSON responses, regardless of the framework or HTTP layer used.
+This library adheres to standard HTTP messaging principles (PSR-compliant) and provides a small set of utilities to standardise how actions handle requests and generate responses. By establishing clear patterns for success responses and error payloads, it helps keep action classes focused on domain logic while giving clients predictable, well-structured JSON responses, regardless of the framework or HTTP layer used.
 
 ## 📥 Installation
 
