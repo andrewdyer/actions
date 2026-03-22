@@ -1,5 +1,5 @@
 {
-  "name": "andrewdyer/php-actions",
+  "name": "andrewdyer/actions",
   "description": "Framework-agnostic action utilities for building structured and predictable JSON API endpoints",
   "type": "library",
   "license": "MIT",

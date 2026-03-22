@@ -9,7 +9,7 @@ This library adheres to standard HTTP messaging principles (PSR-compliant) and p
 ## 📥 Installation
 
 ```bash
-composer require andrewdyer/php-actions
+composer require andrewdyer/actions
 ```
 
 ## 🚀 Getting Started
