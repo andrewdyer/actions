@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Anddye\Actions\Payloads;
+namespace AndrewDyer\Actions\Payloads;
 
 /**
  * Shared base for action error payloads.

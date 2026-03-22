@@ -5,12 +5,12 @@
   "license": "MIT",
   "autoload": {
     "psr-4": {
-      "Anddye\\Actions\\": "src/"
+      "AndrewDyer\\Actions\\": "src/"
     }
   },
   "autoload-dev": {
     "psr-4": {
-      "Anddye\\Actions\\Tests\\": "tests/"
+      "AndrewDyer\\Actions\\Tests\\": "tests/"
     }
   },
   "require": {

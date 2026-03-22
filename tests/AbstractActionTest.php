@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Anddye\Actions\Tests;
+namespace AndrewDyer\Actions\Tests;
 
-use Anddye\Actions\AbstractAction;
-use Anddye\Actions\Payloads\ActionPayload;
+use AndrewDyer\Actions\AbstractAction;
+use AndrewDyer\Actions\Payloads\ActionPayload;
 use JsonException;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ResponseInterface;

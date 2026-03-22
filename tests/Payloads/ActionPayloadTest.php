@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Anddye\Actions\Tests\Payloads;
+namespace AndrewDyer\Actions\Tests\Payloads;
 
-use Anddye\Actions\Payloads\ActionError;
-use Anddye\Actions\Payloads\ActionPayload;
+use AndrewDyer\Actions\Payloads\ActionError;
+use AndrewDyer\Actions\Payloads\ActionPayload;
 use PHPUnit\Framework\TestCase;
 
 /**
