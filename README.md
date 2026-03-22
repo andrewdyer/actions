@@ -82,12 +82,14 @@ $app->run();
 
 Once the route is registered, Slim will invoke your action and return the payload as JSON.
 
+### Successful request
+
 ```
 GET /ping/ok
 Accept: application/json
 ```
 
-**200 OK**
+**Response: 200 OK**
 
 ```json
 {
@@ -97,12 +99,14 @@ Accept: application/json
 }
 ```
 
+### Invalid request
+
 ```
 GET /ping/nope
 Accept: application/json
 ```
 
-**400 Bad Request**
+**Response: 400 Bad Request**
 
 ```json
 {
