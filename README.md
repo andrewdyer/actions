@@ -1,20 +1,20 @@
-# 🎬 Actions
+# Actions
 
 Framework-agnostic action utilities for building structured and predictable JSON API endpoints.
 
-## ✨ Introduction
+## Introduction
 
 This library adheres to standard HTTP messaging principles (PSR-compliant) and provides a small set of utilities to standardise how actions handle requests and generate responses. By establishing clear patterns for success responses and error payloads, it helps keep action classes focused on domain logic while giving clients predictable, well-structured JSON responses, regardless of the framework or HTTP layer used.
 
-## 📥 Installation
+## Installation
 
 ```bash
 composer require andrewdyer/actions
 ```
 
-## 🚀 Getting Started
+## Getting Started
 
-The examples below demonstrate how this library can be used with [Slim Framework 4](https://www.slimframework.com/). 
+The examples below demonstrate how this library can be used with [Slim Framework 4](https://www.slimframework.com/).
 
 > ⚠️ Slim and a PSR-7 implementation are not included as dependencies of this package and must be installed separately before running these examples.
 
@@ -76,7 +76,7 @@ $app->get('/ping/{mode}', PingAction::class);
 $app->run();
 ```
 
-## 📚 Usage
+## Usage
 
 Once the route is registered, Slim will invoke your action and return the payload as JSON.
 
