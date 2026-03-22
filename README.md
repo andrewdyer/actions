@@ -12,6 +12,8 @@ This library adheres to standard HTTP messaging principles (PSR-compliant) and p
 composer require andrewdyer/actions
 ```
 
+Requires PHP 8.3 or newer.
+
 ## Getting Started
 
 The examples below demonstrate how this library can be used with [Slim Framework 4](https://www.slimframework.com/).
