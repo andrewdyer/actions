@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Anddye\Actions;
+namespace AndrewDyer\Actions;
 
-use Anddye\Actions\Payloads\ActionPayloadInterface;
+use AndrewDyer\Actions\Payloads\ActionPayloadInterface;
 use JsonException;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;

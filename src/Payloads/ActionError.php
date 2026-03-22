@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Anddye\Actions\Payloads;
+namespace AndrewDyer\Actions\Payloads;
 
 /**
  * Concrete payload enumerating standard action errors.
