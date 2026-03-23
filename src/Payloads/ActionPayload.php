@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace AndrewDyer\Actions\Payloads;
 
+use AndrewDyer\Actions\Contract\ActionErrorInterface;
+use AndrewDyer\Actions\Contract\ActionPayloadInterface;
+
 /**
  * Immutable payload representing action outcomes.
  *

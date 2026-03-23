@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace AndrewDyer\Actions;
 
-use AndrewDyer\Actions\Payloads\ActionPayloadInterface;
+use AndrewDyer\Actions\Contract\ActionPayloadInterface;
 use JsonException;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;

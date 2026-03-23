@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace AndrewDyer\Actions\Payloads;
 
+use AndrewDyer\Actions\Contract\ActionErrorInterface;
+
 /**
  * Shared base for action error payloads.
  *

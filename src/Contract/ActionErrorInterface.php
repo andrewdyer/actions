@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace AndrewDyer\Actions\Payloads;
+namespace AndrewDyer\Actions\Contract;
 
 use JsonSerializable;
 
