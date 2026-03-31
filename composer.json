@@ -1,6 +1,6 @@
 {
   "name": "andrewdyer/actions",
-  "description": "Framework-agnostic action utilities for building structured and predictable JSON API endpoints",
+  "description": "A framework-agnostic PHP library for building structured and predictable JSON API endpoints with standardised request and response handling",
   "keywords": ["php", "framework-agnostic", "actions", "api", "json-api", "psr-7"],
   "type": "library",
   "license": "MIT",

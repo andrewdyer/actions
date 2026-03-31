@@ -1,6 +1,6 @@
 # Actions
 
-Framework-agnostic action utilities for building structured and predictable JSON API endpoints.
+A framework-agnostic PHP library for building structured and predictable JSON API endpoints with standardised request and response handling.
 
 ## ✨ Introduction
 
