@@ -29,7 +29,7 @@ final readonly class ActionPayload implements ActionPayloadInterface
     }
 
     /**
-     * Builds a successful payload with optional data.
+     * Builds a successful payload with the given data.
      *
      * @param mixed $data       The response data to include in the payload.
      * @param int   $statusCode The HTTP status code, defaults to 200.
