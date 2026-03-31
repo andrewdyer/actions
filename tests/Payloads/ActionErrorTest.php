@@ -19,8 +19,8 @@ final class ActionErrorTest extends TestCase
      *
      * @dataProvider factoryProvider
      *
-     * @param string $factoryMethod
-     * @param string $expectedType
+     * @param string      $factoryMethod
+     * @param string      $expectedType
      * @param string|null $description
      *
      * @return void

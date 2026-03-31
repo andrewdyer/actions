@@ -17,9 +17,9 @@ final readonly class ActionPayload implements ActionPayloadInterface
     /**
      * Creates a new payload instance.
      *
-     * @param mixed                    $data       The response data to include, or null when no data is applicable.
-     * @param int                      $statusCode The HTTP status code for the response.
-     * @param ActionErrorInterface|null $error     An optional structured error to attach for failure responses.
+     * @param mixed                     $data       The response data to include, or null when no data is applicable.
+     * @param int                       $statusCode The HTTP status code for the response.
+     * @param ActionErrorInterface|null $error      An optional structured error to attach for failure responses.
      */
     public function __construct(
         private mixed $data = null,
