@@ -6,13 +6,16 @@ Framework-agnostic action utilities for building structured and predictable JSON
 
 This library adheres to standard HTTP messaging principles (PSR-compliant) and provides a small set of utilities to standardise how actions handle requests and generate responses. By establishing clear patterns for success responses and error payloads, it helps keep action classes focused on domain logic while giving clients predictable, well-structured JSON responses, regardless of the framework or HTTP layer used.
 
+## 📋 Prerequisites
+
+- **[PHP](https://www.php.net/)**: Version 8.3 or higher is required.
+- **[Composer](https://getcomposer.org/)**: Dependency management tool for PHP.
+
 ## 📥 Installation
 
 ```bash
 composer require andrewdyer/actions
 ```
-
-Requires PHP 8.3 or newer.
 
 ## 🚀 Getting Started
 
