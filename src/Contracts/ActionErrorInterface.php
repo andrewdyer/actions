@@ -9,8 +9,6 @@ use JsonSerializable;
 /**
  * Contract for payloads describing action errors.
  *
- * Role: Payload. Guides serialization of structured failure responses.
- *
  * @api
  */
 interface ActionErrorInterface extends JsonSerializable
@@ -18,14 +16,14 @@ interface ActionErrorInterface extends JsonSerializable
     /**
      * Returns the machine-readable error identifier.
      *
-     * @return string
+     * @return string The error type string.
      */
     public function getType(): string;
 
     /**
      * Returns the optional human-readable error detail.
      *
-     * @return string|null
+     * @return string|null The error description, or null if none was provided.
      */
     public function getDescription(): ?string;
 }

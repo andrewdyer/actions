@@ -11,8 +11,6 @@ use PHPUnit\Framework\TestCase;
 /**
  * Validates ActionPayload factories and serialization guarantees.
  *
- * Role: Test. Ensures payloads expose stable status and body data.
- *
  * @internal
  */
 final class ActionPayloadTest extends TestCase

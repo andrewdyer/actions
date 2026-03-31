@@ -10,8 +10,6 @@ use PHPUnit\Framework\TestCase;
 /**
  * Exercises the ActionError factory helpers and serialization.
  *
- * Role: Test. Prevents regressions across error payload variants.
- *
  * @internal
  */
 final class ActionErrorTest extends TestCase
@@ -21,8 +19,8 @@ final class ActionErrorTest extends TestCase
      *
      * @dataProvider factoryProvider
      *
-     * @param string $factoryMethod
-     * @param string $expectedType
+     * @param string      $factoryMethod
+     * @param string      $expectedType
      * @param string|null $description
      *
      * @return void

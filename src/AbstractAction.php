@@ -13,24 +13,33 @@ use RuntimeException;
 /**
  * Base class for HTTP actions following the ADR pattern.
  *
- * Role: Action. It centralizes argument resolution and JSON payload handling.
- *
  * @api
  */
 abstract class AbstractAction
 {
+    /**
+     * Route arguments resolved from the matched URL pattern.
+     */
     private array $args = [];
+
+    /**
+     * The current incoming HTTP request being processed.
+     */
     private ServerRequestInterface $request;
+
+    /**
+     * The HTTP response that will be written to and returned.
+     */
     private ResponseInterface $response;
 
     /**
      * Executes the action with the current request context.
      *
-     * @param ServerRequestInterface $request
-     * @param ResponseInterface $response
-     * @param array<string, string|int> $args
+     * @param ServerRequestInterface    $request  The incoming HTTP request.
+     * @param ResponseInterface         $response The HTTP response to populate and return.
+     * @param array<string, string|int> $args     Named route arguments resolved by the router.
      *
-     * @return ResponseInterface
+     * @return ResponseInterface The response produced by the action.
      */
     final public function __invoke(
         ServerRequestInterface $request,
@@ -47,16 +56,16 @@ abstract class AbstractAction
     /**
      * Runs the domain-specific action logic.
      *
-     * @return ResponseInterface
+     * @return ResponseInterface The response produced by the action.
      */
     abstract protected function handle(): ResponseInterface;
 
     /**
      * Returns the parsed request body as an array.
      *
-     * @throws RuntimeException
+     * @throws RuntimeException When the parsed body is present but is not an array.
      *
-     * @return array
+     * @return array The decoded key-value pairs from the request body.
      */
     protected function getParsedBody(): array
     {
@@ -74,13 +83,13 @@ abstract class AbstractAction
     }
 
     /**
-     * Resolves a required route argument.
+     * Resolves a required route argument by name.
      *
-     * @param string $name
+     * @param string $name The name of the route argument to retrieve.
      *
-     * @throws RuntimeException
+     * @throws RuntimeException When the argument is absent from the current route.
      *
-     * @return string|int
+     * @return string|int The resolved argument value.
      */
     protected function resolveArg(string $name): string|int
     {
@@ -92,13 +101,13 @@ abstract class AbstractAction
     }
 
     /**
-     * Serializes a payload to JSON and applies it to the response.
+     * Serializes a payload to JSON and writes it to the response body.
      *
-     * @param ActionPayloadInterface $payload
+     * @param ActionPayloadInterface $payload The payload to serialize and send.
      *
-     * @throws RuntimeException|JsonException
+     * @throws JsonException When the payload cannot be JSON-encoded.
      *
-     * @return ResponseInterface
+     * @return ResponseInterface The response with the JSON body, Content-Type header, and status applied.
      */
     protected function respondWithJson(ActionPayloadInterface $payload): ResponseInterface
     {

@@ -11,8 +11,6 @@ use Psr\Http\Message\ResponseInterface;
 /**
  * Test double exercising the AbstractAction response helper.
  *
- * Role: Test Action. Supplies deterministic data for assertions.
- *
  * @internal
  */
 final class TestAction extends AbstractAction
