@@ -16,8 +16,6 @@ use Slim\Psr7\Factory\ServerRequestFactory;
 /**
  * Validates the AbstractAction helper behavior.
  *
- * Role: Test. Guards JSON responses and argument resolution.
- *
  * @internal
  */
 final class AbstractActionTest extends TestCase
@@ -119,6 +117,11 @@ final class AbstractActionTest extends TestCase
         $response = $responseFactory->createResponse();
 
         $action = new class () extends AbstractAction {
+            /**
+             * Returns a payload containing an invalid UTF-8 sequence to trigger a JSON encoding failure.
+             *
+             * @return ResponseInterface The response attempted by the action.
+             */
             protected function handle(): ResponseInterface
             {
                 $invalidUtf8 = "\xB1";

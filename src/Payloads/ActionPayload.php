@@ -10,8 +10,6 @@ use AndrewDyer\Actions\Contracts\ActionPayloadInterface;
 /**
  * Immutable payload representing action outcomes.
  *
- * Role: Payload. Couples response data with status codes and errors.
- *
  * @api
  */
 final readonly class ActionPayload implements ActionPayloadInterface
@@ -19,9 +17,9 @@ final readonly class ActionPayload implements ActionPayloadInterface
     /**
      * Creates a new payload instance.
      *
-     * @param mixed $data
-     * @param int $statusCode
-     * @param ActionErrorInterface|null $error
+     * @param mixed                    $data       The response data to include, or null for error responses.
+     * @param int                      $statusCode The HTTP status code for the response.
+     * @param ActionErrorInterface|null $error     An optional structured error to attach for failure responses.
      */
     public function __construct(
         private mixed $data = null,
@@ -33,10 +31,10 @@ final readonly class ActionPayload implements ActionPayloadInterface
     /**
      * Builds a successful payload with optional data.
      *
-     * @param mixed $data
-     * @param int $statusCode
+     * @param mixed $data       The response data to include in the payload.
+     * @param int   $statusCode The HTTP status code, defaults to 200.
      *
-     * @return self
+     * @return self A new success payload instance.
      */
     public static function success(mixed $data, int $statusCode = 200): self
     {
@@ -46,10 +44,10 @@ final readonly class ActionPayload implements ActionPayloadInterface
     /**
      * Builds an error payload with the given status.
      *
-     * @param ActionErrorInterface $error
-     * @param int $statusCode
+     * @param ActionErrorInterface $error      The structured error to include in the payload.
+     * @param int                  $statusCode The HTTP status code associated with the error.
      *
-     * @return self
+     * @return self A new error payload instance.
      */
     public static function error(
         ActionErrorInterface $error,
@@ -61,7 +59,7 @@ final readonly class ActionPayload implements ActionPayloadInterface
     /**
      * Returns the HTTP status code associated with the payload.
      *
-     * @return int
+     * @return int The HTTP status code.
      */
     public function getStatusCode(): int
     {
@@ -71,7 +69,7 @@ final readonly class ActionPayload implements ActionPayloadInterface
     /**
      * Reduces the payload to an array suitable for JSON serialization.
      *
-     * @return array{data?:mixed,error?:ActionErrorInterface}
+     * @return array{data?:mixed,error?:ActionErrorInterface} The serialized payload fields.
      */
     public function jsonSerialize(): array
     {
@@ -91,9 +89,9 @@ final readonly class ActionPayload implements ActionPayloadInterface
     /**
      * Encodes the payload as a JSON string.
      *
-     * @return string
+     * @throws \JsonException When the payload cannot be encoded to JSON.
      *
-     * @throws \JsonException
+     * @return string A JSON-encoded representation of the payload.
      */
     public function toJson(): string
     {
