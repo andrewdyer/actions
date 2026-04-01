@@ -1,5 +1,12 @@
 ![Actions](https://public-assets.andrewdyer.rocks/images/covers/actions.png)
 
+<p align="center">
+  <a href="https://packagist.org/packages/andrewdyer/actions"><img src="https://poser.pugx.org/andrewdyer/actions/v/stable?style=for-the-badge" alt="Latest Stable Version"></a>
+  <a href="https://packagist.org/packages/andrewdyer/actions"><img src="https://poser.pugx.org/andrewdyer/actions/downloads?style=for-the-badge" alt="Total Downloads"></a>
+  <a href="https://packagist.org/packages/andrewdyer/actions"><img src="https://poser.pugx.org/andrewdyer/actions/license?style=for-the-badge" alt="License"></a>
+  <a href="https://packagist.org/packages/andrewdyer/actions"><img src="https://poser.pugx.org/andrewdyer/actions/require/php?style=for-the-badge" alt="PHP Version Required"></a>
+</p>
+
 # Actions
 
 A framework-agnostic PHP library for building structured and predictable JSON API endpoints with standardised request and response handling.
