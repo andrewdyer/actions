@@ -1,3 +1,5 @@
+![Actions](https://public-assets.andrewdyer.rocks/images/covers/actions.png)
+
 # Actions
 
 A framework-agnostic PHP library for building structured and predictable JSON API endpoints with standardised request and response handling.
