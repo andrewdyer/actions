@@ -84,7 +84,7 @@ require __DIR__ . '/../vendor/autoload.php';
 
 $app = AppFactory::create();
 
-// If you're using a container, ensure PingAction is resolvable there.
+// If using a container, ensure PingAction is resolvable there.
 $app->get('/ping/{mode}', PingAction::class);
 
 $app->run();
@@ -92,7 +92,7 @@ $app->run();
 
 ## 📚 Usage
 
-Once the route is registered, Slim will invoke your action and return the payload as JSON.
+Once the route is registered, Slim will invoke the action and return the payload as JSON.
 
 ### Successful request
 
