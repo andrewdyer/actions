@@ -33,9 +33,7 @@ trait RespondsWithJson
     {
         $json = json_encode($payload, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
 
-        if ($json !== false) {
-            $this->response->getBody()->write($json);
-        }
+        $this->response->getBody()->write($json);
 
         return $this->response
             ->withHeader('Content-Type', 'application/json; charset=utf-8')
