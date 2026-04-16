@@ -61,7 +61,13 @@ final class RespondsWithJsonTest extends TestCase
      */
     private function decodeBody(ResponseInterface $response): array
     {
-        return json_decode((string)$response->getBody(), true);
+        $decoded = json_decode((string)$response->getBody(), true, 512, JSON_THROW_ON_ERROR);
+
+        if (!is_array($decoded)) {
+            self::fail('Expected response body JSON to decode to an array.');
+        }
+
+        return $decoded;
     }
 
     /**
