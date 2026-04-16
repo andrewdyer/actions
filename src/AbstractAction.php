@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace AndrewDyer\Actions;
 
 use AndrewDyer\Actions\Concerns\RespondsWithJson;
+use AndrewDyer\Actions\Contracts\ActionPayloadInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use RuntimeException;
