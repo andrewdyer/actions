@@ -19,9 +19,9 @@ use Slim\Psr7\Factory\ServerRequestFactory;
 final class AbstractActionTest extends TestCase
 {
     /**
-     * Asserts that respondWithJson writes the expected headers and payload.
+     * Asserts that json writes the expected headers and payload.
      */
-    public function testRespondWithJsonWritesPayloadAndHeaders(): void
+    public function testJsonWritesPayloadAndHeaders(): void
     {
         $serverRequestFactory = new ServerRequestFactory();
         $request = $serverRequestFactory
