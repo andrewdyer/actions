@@ -96,9 +96,9 @@ final class AbstractActionTest extends TestCase
     }
 
     /**
-     * Asserts that respondWithJson propagates a JsonException when encoding fails.
+     * Asserts that json propagates a JsonException when encoding fails.
      */
-    public function testRespondWithJsonThrowsWhenEncodingFails(): void
+    public function testJsonThrowsWhenEncodingFails(): void
     {
         $serverRequestFactory = new ServerRequestFactory();
         $request = $serverRequestFactory->createServerRequest('GET', '/invalid');
@@ -108,7 +108,7 @@ final class AbstractActionTest extends TestCase
 
         $action = new class () extends AbstractAction {
             /**
-             * Processes the request by writing an invalid UTF-8 payload to trigger a JSON encoding failure.
+             * Returns a response using json with an invalid UTF-8 payload to trigger a JSON encoding failure.
              *
              * @throws JsonException When the payload cannot be JSON-encoded.
              *
