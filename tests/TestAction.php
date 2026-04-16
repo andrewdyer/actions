@@ -18,11 +18,11 @@ final class TestAction extends AbstractAction
     /**
      * Builds a canned JSON payload using the request context.
      *
-     * @return ResponseInterface
+     * @return ResponseInterface The JSON response.
      */
     protected function handle(): ResponseInterface
     {
-        return $this->respondWithJson(
+        return $this->json(
             ActionPayload::success([
                 'message' => 'ok',
                 'body' => $this->getParsedBody(),
