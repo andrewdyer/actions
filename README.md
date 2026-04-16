@@ -42,8 +42,6 @@ declare(strict_types=1);
 namespace App\Http\Actions;
 
 use AndrewDyer\Actions\AbstractAction;
-use AndrewDyer\Actions\Payloads\ActionError;
-use AndrewDyer\Actions\Payloads\ActionPayload;
 use Psr\Http\Message\ResponseInterface;
 
 final class PingAction extends AbstractAction
@@ -53,19 +51,10 @@ final class PingAction extends AbstractAction
         $mode = (string) $this->resolveArg('mode');
 
         if ($mode !== 'ok') {
-            return $this->respondWithJson(
-                ActionPayload::error(
-                    ActionError::badRequest('Mode must be "ok".'),
-                    400
-                )
-            );
+            return $this->badRequest('Mode must be "ok".');
         }
 
-        return $this->respondWithJson(
-            ActionPayload::success([
-                'message' => 'pong',
-            ])
-        );
+        return $this->ok(['message' => 'pong']);
     }
 }
 ```
@@ -128,6 +117,23 @@ Accept: application/json
   }
 }
 ```
+
+## Response helpers
+
+`AbstractAction` exposes the following protected helpers. Each one builds the correct `ActionPayload` and writes it to the response.
+
+| Method                                        | Status          | Error type                |
+| --------------------------------------------- | --------------- | ------------------------- |
+| `ok(mixed $data, int $statusCode = 200)`      | 200 (or custom) | —                         |
+| `badRequest(?string $description = null)`     | 400             | `BAD_REQUEST`             |
+| `unauthorized(?string $description = null)`   | 401             | `UNAUTHENTICATED`         |
+| `forbidden(?string $description = null)`      | 403             | `INSUFFICIENT_PRIVILEGES` |
+| `notFound(?string $description = null)`       | 404             | `RESOURCE_NOT_FOUND`      |
+| `notAllowed(?string $description = null)`     | 405             | `NOT_ALLOWED`             |
+| `serverError(?string $description = null)`    | 500             | `SERVER_ERROR`            |
+| `notImplemented(?string $description = null)` | 501             | `NOT_IMPLEMENTED`         |
+
+When you need full control over the payload you can still call `json(ActionPayloadInterface $payload)` directly.
 
 ## License
 

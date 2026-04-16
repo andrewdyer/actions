@@ -4,8 +4,7 @@ declare(strict_types=1);
 
 namespace AndrewDyer\Actions;
 
-use AndrewDyer\Actions\Contracts\ActionPayloadInterface;
-use JsonException;
+use AndrewDyer\Actions\Concerns\RespondsWithJson;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use RuntimeException;
@@ -17,6 +16,8 @@ use RuntimeException;
  */
 abstract class AbstractAction
 {
+    use RespondsWithJson;
+
     /**
      * Route arguments resolved from the matched URL pattern.
      */
@@ -103,6 +104,8 @@ abstract class AbstractAction
     /**
      * Serializes a payload to JSON and writes it to the response body.
      *
+     * @deprecated Use json() instead.
+     *
      * @param ActionPayloadInterface $payload The payload to serialize and send.
      *
      * @throws JsonException When the payload cannot be JSON-encoded.
@@ -111,14 +114,6 @@ abstract class AbstractAction
      */
     protected function respondWithJson(ActionPayloadInterface $payload): ResponseInterface
     {
-        $json = json_encode($payload, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
-
-        if ($json !== false) {
-            $this->response->getBody()->write($json);
-        }
-
-        return $this->response
-            ->withHeader('Content-Type', 'application/json; charset=utf-8')
-            ->withStatus($payload->getStatusCode());
+        return $this->json($payload);
     }
 }

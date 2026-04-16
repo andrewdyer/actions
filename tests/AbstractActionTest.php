@@ -14,16 +14,12 @@ use Slim\Psr7\Factory\ResponseFactory;
 use Slim\Psr7\Factory\ServerRequestFactory;
 
 /**
- * Validates the AbstractAction helper behavior.
- *
- * @internal
+ * Unit tests for AbstractAction.
  */
 final class AbstractActionTest extends TestCase
 {
     /**
-     * Ensures respondWithJson writes headers and serialized payloads.
-     *
-     * @return void
+     * Asserts that respondWithJson writes the expected headers and payload.
      */
     public function testRespondWithJsonWritesPayloadAndHeaders(): void
     {
@@ -60,9 +56,7 @@ final class AbstractActionTest extends TestCase
     }
 
     /**
-     * Ensures getParsedBody rejects unsupported payload types.
-     *
-     * @return void
+     * Asserts that getParsedBody throws when the body is not an array.
      */
     public function testGetParsedBodyThrowsWhenBodyIsNotArray(): void
     {
@@ -83,9 +77,7 @@ final class AbstractActionTest extends TestCase
     }
 
     /**
-     * Asserts resolveArg throws when required arguments are absent.
-     *
-     * @return void
+     * Asserts that resolveArg throws when the argument is absent.
      */
     public function testResolveArgThrowsWhenMissing(): void
     {
@@ -104,9 +96,7 @@ final class AbstractActionTest extends TestCase
     }
 
     /**
-     * Ensures respondWithJson bubbles JsonException when encoding fails.
-     *
-     * @return void
+     * Asserts that respondWithJson propagates a JsonException when encoding fails.
      */
     public function testRespondWithJsonThrowsWhenEncodingFails(): void
     {
@@ -118,7 +108,9 @@ final class AbstractActionTest extends TestCase
 
         $action = new class () extends AbstractAction {
             /**
-             * Returns a payload containing an invalid UTF-8 sequence to trigger a JSON encoding failure.
+             * Processes the request by writing an invalid UTF-8 payload to trigger a JSON encoding failure.
+             *
+             * @throws JsonException When the payload cannot be JSON-encoded.
              *
              * @return ResponseInterface The response attempted by the action.
              */
@@ -126,7 +118,7 @@ final class AbstractActionTest extends TestCase
             {
                 $invalidUtf8 = "\xB1";
 
-                return $this->respondWithJson(
+                return $this->json(
                     ActionPayload::success(['payload' => $invalidUtf8])
                 );
             }
