@@ -165,7 +165,7 @@ For full control over the payload, call `json(ActionPayloadInterface $payload)` 
 
 ## Exception handling
 
-Domain exceptions are caught automatically by `AbstractAction` and mapped to appropriate HTTP responses. Extend the base exception classes to create domain-specific exceptions.
+Domain exceptions are caught automatically by `AbstractAction` and mapped to appropriate HTTP responses. This is useful when exceptions are thrown from services, repositories, or other domain logic that should not be coupled to HTTP concerns. Extend the base exception classes to create domain-specific exceptions.
 
 | Base exception             | When to use                                      | Status | Error type                |
 | -------------------------- | ------------------------------------------------ | ------ | ------------------------- |
