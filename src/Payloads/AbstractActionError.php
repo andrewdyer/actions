@@ -48,13 +48,16 @@ abstract readonly class AbstractActionError implements ActionErrorInterface
     /**
      * Maps the error payload to an array for JSON encoding.
      *
-     * @return array{type:string,description:?string} The serialized fields of the error.
+     * @return array{type:string,description?:string} The serialized fields of the error.
      */
     public function jsonSerialize(): array
     {
-        return [
-            'type' => $this->type,
-            'description' => $this->description,
-        ];
+        $payload = ['type' => $this->type];
+
+        if ($this->description !== null) {
+            $payload['description'] = $this->description;
+        }
+
+        return $payload;
     }
 }

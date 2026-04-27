@@ -61,7 +61,6 @@ final class ActionErrorTest extends TestCase
         self::assertSame(
             [
                 'type' => ActionError::RESOURCE_NOT_FOUND,
-                'description' => null,
             ],
             $error->jsonSerialize()
         );
