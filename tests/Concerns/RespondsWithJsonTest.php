@@ -161,7 +161,9 @@ final class RespondsWithJsonTest extends TestCase
         $response = $this->dispatch($action);
 
         self::assertSame(401, $response->getStatusCode());
-        self::assertSame(ActionError::UNAUTHENTICATED, $this->decodeBody($response)['error']['type']);
+
+        $body = $this->decodeBody($response);
+        self::assertSame(ActionError::UNAUTHENTICATED, $body['error']['type']);
     }
 
     /**
@@ -199,7 +201,9 @@ final class RespondsWithJsonTest extends TestCase
         $response = $this->dispatch($action);
 
         self::assertSame(403, $response->getStatusCode());
-        self::assertSame(ActionError::INSUFFICIENT_PRIVILEGES, $this->decodeBody($response)['error']['type']);
+
+        $body = $this->decodeBody($response);
+        self::assertSame(ActionError::INSUFFICIENT_PRIVILEGES, $body['error']['type']);
     }
 
     /**
@@ -237,7 +241,9 @@ final class RespondsWithJsonTest extends TestCase
         $response = $this->dispatch($action);
 
         self::assertSame(404, $response->getStatusCode());
-        self::assertSame(ActionError::RESOURCE_NOT_FOUND, $this->decodeBody($response)['error']['type']);
+
+        $body = $this->decodeBody($response);
+        self::assertSame(ActionError::RESOURCE_NOT_FOUND, $body['error']['type']);
     }
 
     /**
@@ -275,7 +281,9 @@ final class RespondsWithJsonTest extends TestCase
         $response = $this->dispatch($action);
 
         self::assertSame(405, $response->getStatusCode());
-        self::assertSame(ActionError::NOT_ALLOWED, $this->decodeBody($response)['error']['type']);
+
+        $body = $this->decodeBody($response);
+        self::assertSame(ActionError::NOT_ALLOWED, $body['error']['type']);
     }
 
     /**
@@ -313,7 +321,9 @@ final class RespondsWithJsonTest extends TestCase
         $response = $this->dispatch($action);
 
         self::assertSame(501, $response->getStatusCode());
-        self::assertSame(ActionError::NOT_IMPLEMENTED, $this->decodeBody($response)['error']['type']);
+
+        $body = $this->decodeBody($response);
+        self::assertSame(ActionError::NOT_IMPLEMENTED, $body['error']['type']);
     }
 
     /**
@@ -351,7 +361,9 @@ final class RespondsWithJsonTest extends TestCase
         $response = $this->dispatch($action);
 
         self::assertSame(500, $response->getStatusCode());
-        self::assertSame(ActionError::SERVER_ERROR, $this->decodeBody($response)['error']['type']);
+
+        $body = $this->decodeBody($response);
+        self::assertSame(ActionError::SERVER_ERROR, $body['error']['type']);
     }
 
     /**
