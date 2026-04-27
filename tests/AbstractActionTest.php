@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace AndrewDyer\Actions\Tests;
 
 use AndrewDyer\Actions\AbstractAction;
+use AndrewDyer\Actions\Exceptions\BadRequestException;
 use AndrewDyer\Actions\Payloads\ActionPayload;
 use JsonException;
 use PHPUnit\Framework\TestCase;
@@ -127,5 +128,37 @@ final class AbstractActionTest extends TestCase
         $this->expectException(JsonException::class);
 
         $action($request, $response, []);
+    }
+
+    /**
+     * Asserts that BadRequestException is caught and returns a 400 JSON response.
+     */
+    public function testCatchesBadRequestException(): void
+    {
+        $serverRequestFactory = new ServerRequestFactory();
+        $request = $serverRequestFactory->createServerRequest('POST', '/invalid');
+
+        $responseFactory = new ResponseFactory();
+        $response = $responseFactory->createResponse();
+
+        $action = new class () extends AbstractAction {
+            protected function handle(): ResponseInterface
+            {
+                throw new BadRequestException('Invalid email format');
+            }
+        };
+
+        $result = $action($request, $response, []);
+
+        self::assertSame(400, $result->getStatusCode());
+        self::assertSame('application/json; charset=utf-8', $result->getHeaderLine('Content-Type'));
+
+        $body = (string)$result->getBody();
+        $decoded = json_decode($body, true, 512, JSON_THROW_ON_ERROR);
+
+        self::assertArrayHasKey('error', $decoded);
+        self::assertArrayNotHasKey('data', $decoded);
+        self::assertSame('BAD_REQUEST', $decoded['error']['type'] ?? null);
+        self::assertSame('Invalid email format', $decoded['error']['description'] ?? null);
     }
 }
