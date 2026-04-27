@@ -7,6 +7,7 @@ namespace AndrewDyer\Actions;
 use AndrewDyer\Actions\Concerns\RespondsWithJson;
 use AndrewDyer\Actions\Contracts\ActionPayloadInterface;
 use AndrewDyer\Actions\Contracts\BadRequestExceptionInterface;
+use AndrewDyer\Actions\Contracts\ForbiddenExceptionInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use RuntimeException;
@@ -57,7 +58,9 @@ abstract class AbstractAction
             return $this->handle();
         } catch (BadRequestExceptionInterface $e) {
             return $this->badRequest($e->getMessage() ?: null);
-        }
+        } catch (ForbiddenExceptionInterface $e) {
+            return $this->forbidden($e->getMessage() ?: null);
+        } 
     }
 
     /**

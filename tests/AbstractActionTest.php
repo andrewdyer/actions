@@ -6,6 +6,7 @@ namespace AndrewDyer\Actions\Tests;
 
 use AndrewDyer\Actions\AbstractAction;
 use AndrewDyer\Actions\Exceptions\BadRequestException;
+use AndrewDyer\Actions\Exceptions\ForbiddenException;
 use AndrewDyer\Actions\Payloads\ActionPayload;
 use JsonException;
 use PHPUnit\Framework\TestCase;
@@ -160,5 +161,37 @@ final class AbstractActionTest extends TestCase
         self::assertArrayNotHasKey('data', $decoded);
         self::assertSame('BAD_REQUEST', $decoded['error']['type'] ?? null);
         self::assertSame('Invalid email format', $decoded['error']['description'] ?? null);
+    }
+
+    /**
+     * Asserts that ForbiddenException is caught and returns a 403 JSON response.
+     */
+    public function testCatchesForbiddenException(): void
+    {
+        $serverRequestFactory = new ServerRequestFactory();
+        $request = $serverRequestFactory->createServerRequest('DELETE', '/admin/users/1');
+
+        $responseFactory = new ResponseFactory();
+        $response = $responseFactory->createResponse();
+
+        $action = new class () extends AbstractAction {
+            protected function handle(): ResponseInterface
+            {
+                throw new ForbiddenException('Admin role required');
+            }
+        };
+
+        $result = $action($request, $response, []);
+
+        self::assertSame(403, $result->getStatusCode());
+        self::assertSame('application/json; charset=utf-8', $result->getHeaderLine('Content-Type'));
+
+        $body = (string)$result->getBody();
+        $decoded = json_decode($body, true, 512, JSON_THROW_ON_ERROR);
+
+        self::assertArrayHasKey('error', $decoded);
+        self::assertArrayNotHasKey('data', $decoded);
+        self::assertSame('INSUFFICIENT_PRIVILEGES', $decoded['error']['type'] ?? null);
+        self::assertSame('Admin role required', $decoded['error']['description'] ?? null);
     }
 }
