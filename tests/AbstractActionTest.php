@@ -9,6 +9,7 @@ use AndrewDyer\Actions\Exceptions\BadRequestException;
 use AndrewDyer\Actions\Exceptions\ForbiddenException;
 use AndrewDyer\Actions\Exceptions\NotFoundException;
 use AndrewDyer\Actions\Exceptions\NotImplementedException;
+use AndrewDyer\Actions\Exceptions\UnauthenticatedException;
 use AndrewDyer\Actions\Payloads\ActionPayload;
 use JsonException;
 use PHPUnit\Framework\TestCase;
@@ -259,5 +260,37 @@ final class AbstractActionTest extends TestCase
         self::assertArrayNotHasKey('data', $decoded);
         self::assertSame('NOT_IMPLEMENTED', $decoded['error']['type'] ?? null);
         self::assertSame('Refunds are not yet supported', $decoded['error']['description'] ?? null);
+    }
+
+    /**
+     * Asserts that UnauthenticatedException is caught and returns a 401 JSON response.
+     */
+    public function testCatchesUnauthenticatedException(): void
+    {
+        $serverRequestFactory = new ServerRequestFactory();
+        $request = $serverRequestFactory->createServerRequest('GET', '/protected');
+
+        $responseFactory = new ResponseFactory();
+        $response = $responseFactory->createResponse();
+
+        $action = new class () extends AbstractAction {
+            protected function handle(): ResponseInterface
+            {
+                throw new UnauthenticatedException('Token expired');
+            }
+        };
+
+        $result = $action($request, $response, []);
+
+        self::assertSame(401, $result->getStatusCode());
+        self::assertSame('application/json; charset=utf-8', $result->getHeaderLine('Content-Type'));
+
+        $body = (string)$result->getBody();
+        $decoded = json_decode($body, true, 512, JSON_THROW_ON_ERROR);
+
+        self::assertArrayHasKey('error', $decoded);
+        self::assertArrayNotHasKey('data', $decoded);
+        self::assertSame('UNAUTHENTICATED', $decoded['error']['type'] ?? null);
+        self::assertSame('Token expired', $decoded['error']['description'] ?? null);
     }
 }

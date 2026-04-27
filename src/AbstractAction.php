@@ -10,6 +10,7 @@ use AndrewDyer\Actions\Contracts\BadRequestExceptionInterface;
 use AndrewDyer\Actions\Contracts\ForbiddenExceptionInterface;
 use AndrewDyer\Actions\Contracts\NotFoundExceptionInterface;
 use AndrewDyer\Actions\Contracts\NotImplementedExceptionInterface;
+use AndrewDyer\Actions\Contracts\UnauthenticatedExceptionInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use RuntimeException;
@@ -66,6 +67,8 @@ abstract class AbstractAction
             return $this->notFound($e->getMessage() ?: null);
         } catch (NotImplementedExceptionInterface $e) {
             return $this->notImplemented($e->getMessage() ?: null);
+        } catch (UnauthenticatedExceptionInterface $e) {
+            return $this->unauthorized($e->getMessage() ?: null);
         }
     }
 
