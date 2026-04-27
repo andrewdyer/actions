@@ -8,6 +8,7 @@ use AndrewDyer\Actions\Concerns\RespondsWithJson;
 use AndrewDyer\Actions\Contracts\ActionPayloadInterface;
 use AndrewDyer\Actions\Contracts\BadRequestExceptionInterface;
 use AndrewDyer\Actions\Contracts\ForbiddenExceptionInterface;
+use AndrewDyer\Actions\Contracts\NotFoundExceptionInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use RuntimeException;
@@ -60,7 +61,9 @@ abstract class AbstractAction
             return $this->badRequest($e->getMessage() ?: null);
         } catch (ForbiddenExceptionInterface $e) {
             return $this->forbidden($e->getMessage() ?: null);
-        } 
+        } catch (NotFoundExceptionInterface $e) {
+            return $this->notFound($e->getMessage() ?: null);
+        }
     }
 
     /**
