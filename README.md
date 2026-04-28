@@ -161,6 +161,8 @@ Helper methods provided by `AbstractAction` generate structured JSON responses. 
 | `serverError(?string $description = null)`    | Unexpected server error occurred                 | 500             | `SERVER_ERROR`            |
 | `notImplemented(?string $description = null)` | Requested functionality has not been implemented | 501             | `NOT_IMPLEMENTED`         |
 
+> **Note:** When the `description` parameter is `null`, the `description` field is omitted entirely from the error response. API consumers should treat `description` as an optional field.
+
 For full control over the payload, call `json(ActionPayloadInterface $payload)` directly.
 
 ## Exception handling
@@ -174,6 +176,8 @@ Domain exceptions are caught automatically by `AbstractAction` and mapped to app
 | `ForbiddenException`       | Authenticated caller lacks required permissions  | 403    | `INSUFFICIENT_PRIVILEGES` |
 | `NotFoundException`        | Requested resource does not exist                | 404    | `RESOURCE_NOT_FOUND`      |
 | `NotImplementedException`  | Requested functionality has not been implemented | 501    | `NOT_IMPLEMENTED`         |
+
+> **Note:** When an exception has an empty message, the `description` field is omitted from the error response. API consumers should treat `description` as an optional field.
 
 Example:
 
