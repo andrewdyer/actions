@@ -141,7 +141,9 @@ final class RespondsWithJsonTest extends TestCase
         $response = $this->dispatch($action);
 
         self::assertSame(400, $response->getStatusCode());
-        self::assertNull($this->decodeBody($response)['error']['description']);
+
+        $body = $this->decodeBody($response);
+        self::assertArrayNotHasKey('description', $body['error']);
     }
 
     /**
@@ -159,7 +161,29 @@ final class RespondsWithJsonTest extends TestCase
         $response = $this->dispatch($action);
 
         self::assertSame(401, $response->getStatusCode());
-        self::assertSame(ActionError::UNAUTHENTICATED, $this->decodeBody($response)['error']['type']);
+
+        $body = $this->decodeBody($response);
+        self::assertSame(ActionError::UNAUTHENTICATED, $body['error']['type']);
+    }
+
+    /**
+     * Asserts that unauthorized method accepts a null description.
+     */
+    public function testUnauthorizedAcceptsNullDescription(): void
+    {
+        $action = new class () extends AbstractAction {
+            protected function handle(): ResponseInterface
+            {
+                return $this->unauthorized();
+            }
+        };
+
+        $response = $this->dispatch($action);
+
+        self::assertSame(401, $response->getStatusCode());
+
+        $body = $this->decodeBody($response);
+        self::assertArrayNotHasKey('description', $body['error']);
     }
 
     /**
@@ -177,7 +201,29 @@ final class RespondsWithJsonTest extends TestCase
         $response = $this->dispatch($action);
 
         self::assertSame(403, $response->getStatusCode());
-        self::assertSame(ActionError::INSUFFICIENT_PRIVILEGES, $this->decodeBody($response)['error']['type']);
+
+        $body = $this->decodeBody($response);
+        self::assertSame(ActionError::INSUFFICIENT_PRIVILEGES, $body['error']['type']);
+    }
+
+    /**
+     * Asserts that forbidden method accepts a null description.
+     */
+    public function testForbiddenAcceptsNullDescription(): void
+    {
+        $action = new class () extends AbstractAction {
+            protected function handle(): ResponseInterface
+            {
+                return $this->forbidden();
+            }
+        };
+
+        $response = $this->dispatch($action);
+
+        self::assertSame(403, $response->getStatusCode());
+
+        $body = $this->decodeBody($response);
+        self::assertArrayNotHasKey('description', $body['error']);
     }
 
     /**
@@ -195,7 +241,29 @@ final class RespondsWithJsonTest extends TestCase
         $response = $this->dispatch($action);
 
         self::assertSame(404, $response->getStatusCode());
-        self::assertSame(ActionError::RESOURCE_NOT_FOUND, $this->decodeBody($response)['error']['type']);
+
+        $body = $this->decodeBody($response);
+        self::assertSame(ActionError::RESOURCE_NOT_FOUND, $body['error']['type']);
+    }
+
+    /**
+     * Asserts that notFound method accepts a null description.
+     */
+    public function testNotFoundAcceptsNullDescription(): void
+    {
+        $action = new class () extends AbstractAction {
+            protected function handle(): ResponseInterface
+            {
+                return $this->notFound();
+            }
+        };
+
+        $response = $this->dispatch($action);
+
+        self::assertSame(404, $response->getStatusCode());
+
+        $body = $this->decodeBody($response);
+        self::assertArrayNotHasKey('description', $body['error']);
     }
 
     /**
@@ -213,7 +281,29 @@ final class RespondsWithJsonTest extends TestCase
         $response = $this->dispatch($action);
 
         self::assertSame(405, $response->getStatusCode());
-        self::assertSame(ActionError::NOT_ALLOWED, $this->decodeBody($response)['error']['type']);
+
+        $body = $this->decodeBody($response);
+        self::assertSame(ActionError::NOT_ALLOWED, $body['error']['type']);
+    }
+
+    /**
+     * Asserts that notAllowed method accepts a null description.
+     */
+    public function testNotAllowedAcceptsNullDescription(): void
+    {
+        $action = new class () extends AbstractAction {
+            protected function handle(): ResponseInterface
+            {
+                return $this->notAllowed();
+            }
+        };
+
+        $response = $this->dispatch($action);
+
+        self::assertSame(405, $response->getStatusCode());
+
+        $body = $this->decodeBody($response);
+        self::assertArrayNotHasKey('description', $body['error']);
     }
 
     /**
@@ -231,7 +321,29 @@ final class RespondsWithJsonTest extends TestCase
         $response = $this->dispatch($action);
 
         self::assertSame(501, $response->getStatusCode());
-        self::assertSame(ActionError::NOT_IMPLEMENTED, $this->decodeBody($response)['error']['type']);
+
+        $body = $this->decodeBody($response);
+        self::assertSame(ActionError::NOT_IMPLEMENTED, $body['error']['type']);
+    }
+
+    /**
+     * Asserts that notImplemented method accepts a null description.
+     */
+    public function testNotImplementedAcceptsNullDescription(): void
+    {
+        $action = new class () extends AbstractAction {
+            protected function handle(): ResponseInterface
+            {
+                return $this->notImplemented();
+            }
+        };
+
+        $response = $this->dispatch($action);
+
+        self::assertSame(501, $response->getStatusCode());
+
+        $body = $this->decodeBody($response);
+        self::assertArrayNotHasKey('description', $body['error']);
     }
 
     /**
@@ -249,6 +361,28 @@ final class RespondsWithJsonTest extends TestCase
         $response = $this->dispatch($action);
 
         self::assertSame(500, $response->getStatusCode());
-        self::assertSame(ActionError::SERVER_ERROR, $this->decodeBody($response)['error']['type']);
+
+        $body = $this->decodeBody($response);
+        self::assertSame(ActionError::SERVER_ERROR, $body['error']['type']);
+    }
+
+    /**
+     * Asserts that serverError method accepts a null description.
+     */
+    public function testServerErrorAcceptsNullDescription(): void
+    {
+        $action = new class () extends AbstractAction {
+            protected function handle(): ResponseInterface
+            {
+                return $this->serverError();
+            }
+        };
+
+        $response = $this->dispatch($action);
+
+        self::assertSame(500, $response->getStatusCode());
+
+        $body = $this->decodeBody($response);
+        self::assertArrayNotHasKey('description', $body['error']);
     }
 }

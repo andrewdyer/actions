@@ -34,7 +34,7 @@ The examples below demonstrate how this library can be used with [Slim Framework
 
 ### 1. Create an action
 
-The action below reads a route argument and returns either a success or error JSON payload.
+The action validates the request, retrieves data, and returns a JSON response.
 
 ```php
 declare(strict_types=1);
@@ -44,49 +44,57 @@ namespace App\Http\Actions;
 use AndrewDyer\Actions\AbstractAction;
 use Psr\Http\Message\ResponseInterface;
 
-final class PingAction extends AbstractAction
+final class GetUserAction extends AbstractAction
 {
     protected function handle(): ResponseInterface
     {
-        $mode = (string) $this->resolveArg('mode');
+        $id = (string) $this->resolveArg('id');
 
-        if ($mode !== 'ok') {
-            return $this->badRequest('Mode must be "ok".');
+        if (!ctype_digit($id)) {
+            return $this->badRequest('User ID must be numeric.');
         }
 
-        return $this->ok(['message' => 'pong']);
+        if ((int) $id !== 123) {
+            return $this->notFound("User {$id} not found.");
+        }
+
+        return $this->ok([
+            'id' => (int) $id,
+            'name' => 'John Smith',
+            'email' => 'john.smith@example.com',
+        ]);
     }
 }
 ```
 
 ### 2. Register the route
 
-The action is wired into the Slim bootstrap so requests to `/ping/{mode}` are dispatched to the action class.
+The action is wired into the Slim bootstrap so requests to `/users/{id}` are dispatched to the action class.
 
 ```php
 declare(strict_types=1);
 
-use App\Http\Actions\PingAction;
+use App\Http\Actions\GetUserAction;
 use Slim\Factory\AppFactory;
 
 require __DIR__ . '/../vendor/autoload.php';
 
 $app = AppFactory::create();
 
-// If using a container, ensure PingAction is resolvable there.
-$app->get('/ping/{mode}', PingAction::class);
+// If using a container, ensure GetUserAction is resolvable there.
+$app->get('/users/{id}', GetUserAction::class);
 
 $app->run();
 ```
 
 ## Usage
 
-Once the route is registered, Slim will invoke the action and return the payload as JSON.
+Once the route is registered, Slim invokes the action and returns the payload as JSON.
 
 ### Successful request
 
 ```
-GET /ping/ok
+GET /users/123
 Accept: application/json
 ```
 
@@ -95,15 +103,17 @@ Accept: application/json
 ```json
 {
   "data": {
-    "message": "pong"
+    "id": 123,
+    "name": "John Smith",
+    "email": "john.smith@example.com"
   }
 }
 ```
 
-### Invalid request
+### Validation error
 
 ```
-GET /ping/nope
+GET /users/abc
 Accept: application/json
 ```
 
@@ -113,27 +123,79 @@ Accept: application/json
 {
   "error": {
     "type": "BAD_REQUEST",
-    "description": "Mode must be \"ok\"."
+    "description": "User ID must be numeric."
+  }
+}
+```
+
+### Resource not found
+
+```
+GET /users/999
+Accept: application/json
+```
+
+**Response: 404 Not Found**
+
+```json
+{
+  "error": {
+    "type": "RESOURCE_NOT_FOUND",
+    "description": "User 999 not found."
   }
 }
 ```
 
 ## Response helpers
 
-`AbstractAction` exposes the following protected helpers. Each one builds the correct `ActionPayload` and writes it to the response.
+Helper methods provided by `AbstractAction` generate structured JSON responses. Each builds the appropriate `ActionPayload` and writes it to the response.
 
-| Method                                        | Status          | Error type                |
-| --------------------------------------------- | --------------- | ------------------------- |
-| `ok(mixed $data, int $statusCode = 200)`      | 200 (or custom) | —                         |
-| `badRequest(?string $description = null)`     | 400             | `BAD_REQUEST`             |
-| `unauthorized(?string $description = null)`   | 401             | `UNAUTHENTICATED`         |
-| `forbidden(?string $description = null)`      | 403             | `INSUFFICIENT_PRIVILEGES` |
-| `notFound(?string $description = null)`       | 404             | `RESOURCE_NOT_FOUND`      |
-| `notAllowed(?string $description = null)`     | 405             | `NOT_ALLOWED`             |
-| `serverError(?string $description = null)`    | 500             | `SERVER_ERROR`            |
-| `notImplemented(?string $description = null)` | 501             | `NOT_IMPLEMENTED`         |
+| Method                                        | When to use                                      | Status          | Error type                |
+| --------------------------------------------- | ------------------------------------------------ | --------------- | ------------------------- |
+| `ok(mixed $data, int $statusCode = 200)`      | Successful operation with data payload           | 200 (or custom) | —                         |
+| `badRequest(?string $description = null)`     | Request is malformed or violates business rules  | 400             | `BAD_REQUEST`             |
+| `unauthorized(?string $description = null)`   | Request lacks valid authentication credentials   | 401             | `UNAUTHENTICATED`         |
+| `forbidden(?string $description = null)`      | Authenticated caller lacks required permissions  | 403             | `INSUFFICIENT_PRIVILEGES` |
+| `notFound(?string $description = null)`       | Requested resource does not exist                | 404             | `RESOURCE_NOT_FOUND`      |
+| `notAllowed(?string $description = null)`     | HTTP method not allowed for the resource         | 405             | `NOT_ALLOWED`             |
+| `serverError(?string $description = null)`    | Unexpected server error occurred                 | 500             | `SERVER_ERROR`            |
+| `notImplemented(?string $description = null)` | Requested functionality has not been implemented | 501             | `NOT_IMPLEMENTED`         |
 
-When you need full control over the payload you can still call `json(ActionPayloadInterface $payload)` directly.
+> **Note:** When the `description` parameter is `null`, the `description` field is omitted entirely from the error response. API consumers should treat `description` as an optional field.
+
+For full control over the payload, call `json(ActionPayloadInterface $payload)` directly.
+
+## Exception handling
+
+Domain exceptions are caught automatically by `AbstractAction` and mapped to appropriate HTTP responses. This is useful when exceptions are thrown from services, repositories, or other domain logic that should not be coupled to HTTP concerns. Extend the base exception classes to create domain-specific exceptions.
+
+| Base exception             | When to use                                      | Status | Error type                |
+| -------------------------- | ------------------------------------------------ | ------ | ------------------------- |
+| `BadRequestException`      | Request is malformed or violates business rules  | 400    | `BAD_REQUEST`             |
+| `UnauthenticatedException` | Request lacks valid authentication credentials   | 401    | `UNAUTHENTICATED`         |
+| `ForbiddenException`       | Authenticated caller lacks required permissions  | 403    | `INSUFFICIENT_PRIVILEGES` |
+| `NotFoundException`        | Requested resource does not exist                | 404    | `RESOURCE_NOT_FOUND`      |
+| `NotImplementedException`  | Requested functionality has not been implemented | 501    | `NOT_IMPLEMENTED`         |
+
+> **Note:** When an exception has an empty message, the `description` field is omitted from the error response. API consumers should treat `description` as an optional field.
+
+Example:
+
+```php
+declare(strict_types=1);
+
+namespace App\Domain\Exceptions;
+
+use AndrewDyer\Actions\Exceptions\NotFoundException;
+
+final class UserNotFoundException extends NotFoundException
+{
+    public function __construct(int $id)
+    {
+        parent::__construct("User {$id} not found.");
+    }
+}
+```
 
 ## License
 

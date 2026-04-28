@@ -6,6 +6,11 @@ namespace AndrewDyer\Actions;
 
 use AndrewDyer\Actions\Concerns\RespondsWithJson;
 use AndrewDyer\Actions\Contracts\ActionPayloadInterface;
+use AndrewDyer\Actions\Contracts\BadRequestExceptionInterface;
+use AndrewDyer\Actions\Contracts\ForbiddenExceptionInterface;
+use AndrewDyer\Actions\Contracts\NotFoundExceptionInterface;
+use AndrewDyer\Actions\Contracts\NotImplementedExceptionInterface;
+use AndrewDyer\Actions\Contracts\UnauthenticatedExceptionInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use RuntimeException;
@@ -52,7 +57,19 @@ abstract class AbstractAction
         $this->response = $response;
         $this->args = $args;
 
-        return $this->handle();
+        try {
+            return $this->handle();
+        } catch (BadRequestExceptionInterface $e) {
+            return $this->badRequest($this->getExceptionMessage($e));
+        } catch (ForbiddenExceptionInterface $e) {
+            return $this->forbidden($this->getExceptionMessage($e));
+        } catch (NotFoundExceptionInterface $e) {
+            return $this->notFound($this->getExceptionMessage($e));
+        } catch (NotImplementedExceptionInterface $e) {
+            return $this->notImplemented($this->getExceptionMessage($e));
+        } catch (UnauthenticatedExceptionInterface $e) {
+            return $this->unauthorized($this->getExceptionMessage($e));
+        }
     }
 
     /**
@@ -61,6 +78,18 @@ abstract class AbstractAction
      * @return ResponseInterface The response produced by the action.
      */
     abstract protected function handle(): ResponseInterface;
+
+    /**
+     * Extracts the exception message, returning null for empty strings.
+     *
+     * @param \Throwable $e The exception to extract the message from.
+     *
+     * @return string|null The exception message, or null if empty.
+     */
+    private function getExceptionMessage(\Throwable $e): ?string
+    {
+        return $e->getMessage() !== '' ? $e->getMessage() : null;
+    }
 
     /**
      * Returns the parsed request body as an array.
