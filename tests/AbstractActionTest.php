@@ -10,6 +10,7 @@ use AndrewDyer\Actions\Exceptions\ForbiddenException;
 use AndrewDyer\Actions\Exceptions\NotFoundException;
 use AndrewDyer\Actions\Exceptions\NotImplementedException;
 use AndrewDyer\Actions\Exceptions\UnauthenticatedException;
+use AndrewDyer\Actions\Payloads\ActionError;
 use AndrewDyer\Actions\Payloads\ActionPayload;
 use JsonException;
 use PHPUnit\Framework\TestCase;
@@ -162,7 +163,7 @@ final class AbstractActionTest extends TestCase
 
         self::assertArrayHasKey('error', $decoded);
         self::assertArrayNotHasKey('data', $decoded);
-        self::assertSame('BAD_REQUEST', $decoded['error']['type'] ?? null);
+        self::assertSame(ActionError::BAD_REQUEST, $decoded['error']['type'] ?? null);
         self::assertSame('Invalid email format', $decoded['error']['description'] ?? null);
     }
 
@@ -194,7 +195,7 @@ final class AbstractActionTest extends TestCase
 
         self::assertArrayHasKey('error', $decoded);
         self::assertArrayNotHasKey('data', $decoded);
-        self::assertSame('INSUFFICIENT_PRIVILEGES', $decoded['error']['type'] ?? null);
+        self::assertSame(ActionError::INSUFFICIENT_PRIVILEGES, $decoded['error']['type'] ?? null);
         self::assertSame('Admin role required', $decoded['error']['description'] ?? null);
     }
 
@@ -226,7 +227,7 @@ final class AbstractActionTest extends TestCase
 
         self::assertArrayHasKey('error', $decoded);
         self::assertArrayNotHasKey('data', $decoded);
-        self::assertSame('RESOURCE_NOT_FOUND', $decoded['error']['type'] ?? null);
+        self::assertSame(ActionError::RESOURCE_NOT_FOUND, $decoded['error']['type'] ?? null);
         self::assertSame('User not found', $decoded['error']['description'] ?? null);
     }
 
@@ -258,7 +259,7 @@ final class AbstractActionTest extends TestCase
 
         self::assertArrayHasKey('error', $decoded);
         self::assertArrayNotHasKey('data', $decoded);
-        self::assertSame('NOT_IMPLEMENTED', $decoded['error']['type'] ?? null);
+        self::assertSame(ActionError::NOT_IMPLEMENTED, $decoded['error']['type'] ?? null);
         self::assertSame('Refunds are not yet supported', $decoded['error']['description'] ?? null);
     }
 
@@ -290,7 +291,7 @@ final class AbstractActionTest extends TestCase
 
         self::assertArrayHasKey('error', $decoded);
         self::assertArrayNotHasKey('data', $decoded);
-        self::assertSame('UNAUTHENTICATED', $decoded['error']['type'] ?? null);
+        self::assertSame(ActionError::UNAUTHENTICATED, $decoded['error']['type'] ?? null);
         self::assertSame('Token expired', $decoded['error']['description'] ?? null);
     }
 
@@ -320,7 +321,7 @@ final class AbstractActionTest extends TestCase
         $decoded = json_decode($body, true, 512, JSON_THROW_ON_ERROR);
 
         self::assertArrayHasKey('error', $decoded);
-        self::assertSame('RESOURCE_NOT_FOUND', $decoded['error']['type'] ?? null);
+        self::assertSame(ActionError::RESOURCE_NOT_FOUND, $decoded['error']['type'] ?? null);
         self::assertArrayNotHasKey('description', $decoded['error']);
     }
 
@@ -350,7 +351,7 @@ final class AbstractActionTest extends TestCase
         $decoded = json_decode($body, true, 512, JSON_THROW_ON_ERROR);
 
         self::assertArrayHasKey('error', $decoded);
-        self::assertSame('RESOURCE_NOT_FOUND', $decoded['error']['type'] ?? null);
+        self::assertSame(ActionError::RESOURCE_NOT_FOUND, $decoded['error']['type'] ?? null);
         self::assertSame('0', $decoded['error']['description'] ?? null);
     }
 }
