@@ -323,4 +323,34 @@ final class AbstractActionTest extends TestCase
         self::assertSame('RESOURCE_NOT_FOUND', $decoded['error']['type'] ?? null);
         self::assertArrayNotHasKey('description', $decoded['error']);
     }
+
+    /**
+     * Asserts that exceptions with "0" as message preserve it (not treated as falsy).
+     */
+    public function testCatchesExceptionWithZeroMessage(): void
+    {
+        $serverRequestFactory = new ServerRequestFactory();
+        $request = $serverRequestFactory->createServerRequest('GET', '/items/0');
+
+        $responseFactory = new ResponseFactory();
+        $response = $responseFactory->createResponse();
+
+        $action = new class () extends AbstractAction {
+            protected function handle(): ResponseInterface
+            {
+                throw new NotFoundException('0');
+            }
+        };
+
+        $result = $action($request, $response, []);
+
+        self::assertSame(404, $result->getStatusCode());
+
+        $body = (string)$result->getBody();
+        $decoded = json_decode($body, true, 512, JSON_THROW_ON_ERROR);
+
+        self::assertArrayHasKey('error', $decoded);
+        self::assertSame('RESOURCE_NOT_FOUND', $decoded['error']['type'] ?? null);
+        self::assertSame('0', $decoded['error']['description'] ?? null);
+    }
 }
