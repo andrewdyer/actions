@@ -165,6 +165,93 @@ Helper methods provided by `AbstractAction` generate structured JSON responses. 
 
 For full control over the payload, call `json(ActionPayloadInterface $payload)` directly.
 
+## Request helpers
+
+Helper methods are available for accessing request data in a consistent and predictable manner.
+
+### Query parameters
+
+Query parameters from the request URI can be accessed using two methods:
+
+- **`getQueryParams(): array`** — Returns all query parameters as an associative array
+- **`resolveQueryParam(string $name): string|array`** — Retrieves a specific query parameter by name, throwing a `RuntimeException` if the parameter is not present
+
+### Example: Pagination and filtering
+
+```php
+declare(strict_types=1);
+
+namespace App\Http\Actions;
+
+use AndrewDyer\Actions\AbstractAction;
+use Psr\Http\Message\ResponseInterface;
+
+final class ListProductsAction extends AbstractAction
+{
+    protected function handle(): ResponseInterface
+    {
+        // Get all query parameters
+        $queryParams = $this->getQueryParams();
+
+        // Resolve specific required parameters
+        $category = $this->resolveQueryParam('category');
+
+        // Optional parameters with defaults
+        $page = $queryParams['page'] ?? 1;
+        $limit = $queryParams['limit'] ?? 20;
+
+        // Your domain logic here...
+        $products = $this->fetchProducts($category, (int) $page, (int) $limit);
+
+        return $this->ok([
+            'products' => $products,
+            'pagination' => [
+                'page' => (int) $page,
+                'limit' => (int) $limit,
+            ],
+        ]);
+    }
+}
+```
+
+**Request**
+
+```
+GET /products?category=electronics&page=2&limit=10
+Accept: application/json
+```
+
+**Response: 200 OK**
+
+```json
+{
+  "data": {
+    "products": [...],
+    "pagination": {
+      "page": 2,
+      "limit": 10
+    }
+  }
+}
+```
+
+### Example: Array query parameters
+
+Query parameters may also contain array values (for example, `?tags[]=foo&tags[]=bar`):
+
+```php
+protected function handle(): ResponseInterface
+{
+    // Resolves to ['foo', 'bar', 'baz']
+    $tags = $this->resolveQueryParam('tags');
+
+    // Your domain logic here...
+    $items = $this->findByTags($tags);
+
+    return $this->ok(['items' => $items]);
+}
+```
+
 ## Exception handling
 
 Domain exceptions are caught automatically by `AbstractAction` and mapped to appropriate HTTP responses. This is useful when exceptions are thrown from services, repositories, or other domain logic that should not be coupled to HTTP concerns. Extend the base exception classes to create domain-specific exceptions.
