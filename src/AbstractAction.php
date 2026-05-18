@@ -124,6 +124,16 @@ abstract class AbstractAction
     }
 
     /**
+     * Returns the route arguments from the matched URL pattern.
+     *
+     * @return array<string, string|int> The route arguments as key-value pairs.
+     */
+    protected function getArgs(): array
+    {
+        return $this->args;
+    }
+
+    /**
      * Resolves a required route argument by name.
      *
      * @param string $name The name of the route argument to retrieve.

@@ -117,6 +117,58 @@ final class AbstractActionTest extends TestCase
     }
 
     /**
+     * Asserts that getArgs returns route arguments from the matched URL pattern.
+     */
+    public function testGetArgsReturnsArguments(): void
+    {
+        $action = new class () extends AbstractAction {
+            protected function handle(): ResponseInterface
+            {
+                return $this->json(
+                    ActionPayload::success(['args' => $this->getArgs()])
+                );
+            }
+        };
+
+        $result = $action(
+            $this->makeRequest('GET', '/orders/123/items/456'),
+            $this->makeResponse(),
+            ['orderId' => '123', 'itemId' => '456']
+        );
+
+        self::assertSame(200, $result->getStatusCode());
+
+        $decoded = json_decode((string)$result->getBody(), true, 512, JSON_THROW_ON_ERROR);
+
+        self::assertArrayHasKey('data', $decoded);
+        self::assertSame(['orderId' => '123', 'itemId' => '456'], $decoded['data']['args']);
+    }
+
+    /**
+     * Asserts that getArgs returns an empty array when no route arguments are present.
+     */
+    public function testGetArgsReturnsEmptyArrayWhenNoArguments(): void
+    {
+        $action = new class () extends AbstractAction {
+            protected function handle(): ResponseInterface
+            {
+                return $this->json(
+                    ActionPayload::success(['args' => $this->getArgs()])
+                );
+            }
+        };
+
+        $result = $action($this->makeRequest('GET', '/items'), $this->makeResponse(), []);
+
+        self::assertSame(200, $result->getStatusCode());
+
+        $decoded = json_decode((string)$result->getBody(), true, 512, JSON_THROW_ON_ERROR);
+
+        self::assertArrayHasKey('data', $decoded);
+        self::assertSame([], $decoded['data']['args']);
+    }
+
+    /**
      * Asserts that resolveArg throws when the argument is absent.
      */
     public function testResolveArgThrowsWhenMissing(): void
