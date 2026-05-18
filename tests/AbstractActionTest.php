@@ -46,8 +46,8 @@ final class AbstractActionTest extends TestCase
         $action = new TestAction();
         $result = $action($request, $this->makeResponse(), ['thingId' => 42]);
 
-        self::assertSame('application/json; charset=utf-8', $result->getHeaderLine('Content-Type'));
         self::assertSame(200, $result->getStatusCode());
+        self::assertSame('application/json; charset=utf-8', $result->getHeaderLine('Content-Type'));
 
         $body = (string)$result->getBody();
         self::assertJson($body);
@@ -68,35 +68,6 @@ final class AbstractActionTest extends TestCase
     }
 
     /**
-     * Asserts that getParsedBody throws when the body is not an array.
-     */
-    public function testGetParsedBodyThrowsWhenBodyIsNotArray(): void
-    {
-        $request = $this->makeRequest('POST', '/things/42')
-            ->withParsedBody((object)['name' => 'Widget']);
-
-        $action = new TestAction();
-
-        $this->expectException(RuntimeException::class);
-        $this->expectExceptionMessage('Request body must decode to an array.');
-
-        $action($request, $this->makeResponse(), ['thingId' => 42]);
-    }
-
-    /**
-     * Asserts that resolveArg throws when the argument is absent.
-     */
-    public function testResolveArgThrowsWhenMissing(): void
-    {
-        $action = new TestAction();
-
-        $this->expectException(RuntimeException::class);
-        $this->expectExceptionMessage('Missing route argument: thingId');
-
-        $action($this->makeRequest('GET', '/missing'), $this->makeResponse(), []);
-    }
-
-    /**
      * Asserts that json propagates a JsonException when encoding fails.
      */
     public function testJsonThrowsWhenEncodingFails(): void
@@ -111,10 +82,8 @@ final class AbstractActionTest extends TestCase
              */
             protected function handle(): ResponseInterface
             {
-                $invalidUtf8 = "\xB1";
-
                 return $this->json(
-                    ActionPayload::success(['payload' => $invalidUtf8])
+                    ActionPayload::success(['payload' => "\xB1"])
                 );
             }
         };
@@ -122,6 +91,49 @@ final class AbstractActionTest extends TestCase
         $this->expectException(JsonException::class);
 
         $action($this->makeRequest('GET', '/invalid'), $this->makeResponse(), []);
+    }
+
+    /**
+     * Asserts that getParsedBody throws when the body is not an array.
+     */
+    public function testGetParsedBodyThrowsWhenBodyIsNotArray(): void
+    {
+        $request = $this->makeRequest('POST', '/things/42')
+            ->withParsedBody((object)['name' => 'Widget']);
+
+        $action = new class () extends AbstractAction {
+            protected function handle(): ResponseInterface
+            {
+                $this->getParsedBody();
+
+                return $this->json(ActionPayload::success([]));
+            }
+        };
+
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('Request body must decode to an array.');
+
+        $action($request, $this->makeResponse(), []);
+    }
+
+    /**
+     * Asserts that resolveArg throws when the argument is absent.
+     */
+    public function testResolveArgThrowsWhenMissing(): void
+    {
+        $action = new class () extends AbstractAction {
+            protected function handle(): ResponseInterface
+            {
+                $this->resolveArg('thingId');
+
+                return $this->json(ActionPayload::success([]));
+            }
+        };
+
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('Missing route argument: thingId');
+
+        $action($this->makeRequest('GET', '/missing'), $this->makeResponse(), []);
     }
 
     /**
@@ -141,8 +153,7 @@ final class AbstractActionTest extends TestCase
         self::assertSame(400, $result->getStatusCode());
         self::assertSame('application/json; charset=utf-8', $result->getHeaderLine('Content-Type'));
 
-        $body = (string)$result->getBody();
-        $decoded = json_decode($body, true, 512, JSON_THROW_ON_ERROR);
+        $decoded = json_decode((string)$result->getBody(), true, 512, JSON_THROW_ON_ERROR);
 
         self::assertArrayHasKey('error', $decoded);
         self::assertArrayNotHasKey('data', $decoded);
@@ -167,8 +178,7 @@ final class AbstractActionTest extends TestCase
         self::assertSame(403, $result->getStatusCode());
         self::assertSame('application/json; charset=utf-8', $result->getHeaderLine('Content-Type'));
 
-        $body = (string)$result->getBody();
-        $decoded = json_decode($body, true, 512, JSON_THROW_ON_ERROR);
+        $decoded = json_decode((string)$result->getBody(), true, 512, JSON_THROW_ON_ERROR);
 
         self::assertArrayHasKey('error', $decoded);
         self::assertArrayNotHasKey('data', $decoded);
@@ -193,8 +203,7 @@ final class AbstractActionTest extends TestCase
         self::assertSame(404, $result->getStatusCode());
         self::assertSame('application/json; charset=utf-8', $result->getHeaderLine('Content-Type'));
 
-        $body = (string)$result->getBody();
-        $decoded = json_decode($body, true, 512, JSON_THROW_ON_ERROR);
+        $decoded = json_decode((string)$result->getBody(), true, 512, JSON_THROW_ON_ERROR);
 
         self::assertArrayHasKey('error', $decoded);
         self::assertArrayNotHasKey('data', $decoded);
@@ -219,8 +228,7 @@ final class AbstractActionTest extends TestCase
         self::assertSame(501, $result->getStatusCode());
         self::assertSame('application/json; charset=utf-8', $result->getHeaderLine('Content-Type'));
 
-        $body = (string)$result->getBody();
-        $decoded = json_decode($body, true, 512, JSON_THROW_ON_ERROR);
+        $decoded = json_decode((string)$result->getBody(), true, 512, JSON_THROW_ON_ERROR);
 
         self::assertArrayHasKey('error', $decoded);
         self::assertArrayNotHasKey('data', $decoded);
@@ -245,8 +253,7 @@ final class AbstractActionTest extends TestCase
         self::assertSame(401, $result->getStatusCode());
         self::assertSame('application/json; charset=utf-8', $result->getHeaderLine('Content-Type'));
 
-        $body = (string)$result->getBody();
-        $decoded = json_decode($body, true, 512, JSON_THROW_ON_ERROR);
+        $decoded = json_decode((string)$result->getBody(), true, 512, JSON_THROW_ON_ERROR);
 
         self::assertArrayHasKey('error', $decoded);
         self::assertArrayNotHasKey('data', $decoded);
@@ -270,8 +277,7 @@ final class AbstractActionTest extends TestCase
 
         self::assertSame(404, $result->getStatusCode());
 
-        $body = (string)$result->getBody();
-        $decoded = json_decode($body, true, 512, JSON_THROW_ON_ERROR);
+        $decoded = json_decode((string)$result->getBody(), true, 512, JSON_THROW_ON_ERROR);
 
         self::assertArrayHasKey('error', $decoded);
         self::assertSame(ActionError::RESOURCE_NOT_FOUND, $decoded['error']['type'] ?? null);
@@ -294,8 +300,7 @@ final class AbstractActionTest extends TestCase
 
         self::assertSame(404, $result->getStatusCode());
 
-        $body = (string)$result->getBody();
-        $decoded = json_decode($body, true, 512, JSON_THROW_ON_ERROR);
+        $decoded = json_decode((string)$result->getBody(), true, 512, JSON_THROW_ON_ERROR);
 
         self::assertArrayHasKey('error', $decoded);
         self::assertSame(ActionError::RESOURCE_NOT_FOUND, $decoded['error']['type'] ?? null);
@@ -310,26 +315,21 @@ final class AbstractActionTest extends TestCase
         $action = new class () extends AbstractAction {
             protected function handle(): ResponseInterface
             {
-                $queryParams = $this->getQueryParams();
-
                 return $this->json(
-                    ActionPayload::success(['queryParams' => $queryParams])
+                    ActionPayload::success(['queryParams' => $this->getQueryParams()])
                 );
             }
         };
 
         $result = $action($this->makeRequest('GET', '/search?q=test&page=2&limit=10'), $this->makeResponse(), []);
 
-        $body = (string)$result->getBody();
-        $decoded = json_decode($body, true, 512, JSON_THROW_ON_ERROR);
+        self::assertSame(200, $result->getStatusCode());
+
+        $decoded = json_decode((string)$result->getBody(), true, 512, JSON_THROW_ON_ERROR);
 
         self::assertArrayHasKey('data', $decoded);
-        self::assertEquals(
-            [
-                'q' => 'test',
-                'page' => '2',
-                'limit' => '10',
-            ],
+        self::assertSame(
+            ['q' => 'test', 'page' => '2', 'limit' => '10'],
             $decoded['data']['queryParams']
         );
     }
@@ -342,38 +342,34 @@ final class AbstractActionTest extends TestCase
         $action = new class () extends AbstractAction {
             protected function handle(): ResponseInterface
             {
-                $queryParams = $this->getQueryParams();
-
                 return $this->json(
-                    ActionPayload::success(['queryParams' => $queryParams])
+                    ActionPayload::success(['queryParams' => $this->getQueryParams()])
                 );
             }
         };
 
         $result = $action($this->makeRequest('GET', '/items'), $this->makeResponse(), []);
 
-        $body = (string)$result->getBody();
-        $decoded = json_decode($body, true, 512, JSON_THROW_ON_ERROR);
+        self::assertSame(200, $result->getStatusCode());
+
+        $decoded = json_decode((string)$result->getBody(), true, 512, JSON_THROW_ON_ERROR);
 
         self::assertArrayHasKey('data', $decoded);
         self::assertSame([], $decoded['data']['queryParams']);
     }
 
     /**
-     * Asserts that resolveQueryParam successfully retrieves a required query parameter.
+     * Asserts that resolveQueryParam successfully retrieves a present required parameter.
      */
     public function testResolveQueryParamReturnsParameter(): void
     {
         $action = new class () extends AbstractAction {
             protected function handle(): ResponseInterface
             {
-                $query = $this->resolveQueryParam('q');
-                $category = $this->resolveQueryParam('category');
-
                 return $this->json(
                     ActionPayload::success([
-                        'query' => $query,
-                        'category' => $category,
+                        'query' => $this->resolveQueryParam('q'),
+                        'category' => $this->resolveQueryParam('category'),
                     ])
                 );
             }
@@ -381,8 +377,9 @@ final class AbstractActionTest extends TestCase
 
         $result = $action($this->makeRequest('GET', '/search?q=test&category=books'), $this->makeResponse(), []);
 
-        $body = (string)$result->getBody();
-        $decoded = json_decode($body, true, 512, JSON_THROW_ON_ERROR);
+        self::assertSame(200, $result->getStatusCode());
+
+        $decoded = json_decode((string)$result->getBody(), true, 512, JSON_THROW_ON_ERROR);
 
         self::assertArrayHasKey('data', $decoded);
         self::assertSame('test', $decoded['data']['query']);
@@ -417,39 +414,34 @@ final class AbstractActionTest extends TestCase
         $action = new class () extends AbstractAction {
             protected function handle(): ResponseInterface
             {
-                $tags = $this->resolveQueryParam('tags');
-
                 return $this->json(
-                    ActionPayload::success(['tags' => $tags])
+                    ActionPayload::success(['tags' => $this->resolveQueryParam('tags')])
                 );
             }
         };
 
         $result = $action($this->makeRequest('GET', '/items?tags[]=foo&tags[]=bar&tags[]=baz'), $this->makeResponse(), []);
 
-        $body = (string)$result->getBody();
-        $decoded = json_decode($body, true, 512, JSON_THROW_ON_ERROR);
+        self::assertSame(200, $result->getStatusCode());
+
+        $decoded = json_decode((string)$result->getBody(), true, 512, JSON_THROW_ON_ERROR);
 
         self::assertArrayHasKey('data', $decoded);
-        self::assertIsArray($decoded['data']['tags']);
         self::assertSame(['foo', 'bar', 'baz'], $decoded['data']['tags']);
     }
 
     /**
-     * Asserts that resolveQueryParam returns an existing optional query parameter.
+     * Asserts that resolveQueryParam returns an existing optional query parameter (not the default).
      */
     public function testResolveQueryParamReturnsOptionalParameter(): void
     {
         $action = new class () extends AbstractAction {
             protected function handle(): ResponseInterface
             {
-                $page = $this->resolveQueryParam('page', 1);
-                $limit = $this->resolveQueryParam('limit', 20);
-
                 return $this->json(
                     ActionPayload::success([
-                        'page' => $page,
-                        'limit' => $limit,
+                        'page' => $this->resolveQueryParam('page', 1),
+                        'limit' => $this->resolveQueryParam('limit', 20),
                     ])
                 );
             }
@@ -457,8 +449,9 @@ final class AbstractActionTest extends TestCase
 
         $result = $action($this->makeRequest('GET', '/items?page=2&limit=10'), $this->makeResponse(), []);
 
-        $body = (string)$result->getBody();
-        $decoded = json_decode($body, true, 512, JSON_THROW_ON_ERROR);
+        self::assertSame(200, $result->getStatusCode());
+
+        $decoded = json_decode((string)$result->getBody(), true, 512, JSON_THROW_ON_ERROR);
 
         self::assertArrayHasKey('data', $decoded);
         self::assertSame('2', $decoded['data']['page']);
@@ -473,41 +466,35 @@ final class AbstractActionTest extends TestCase
         $action = new class () extends AbstractAction {
             protected function handle(): ResponseInterface
             {
-                $tags = $this->resolveQueryParam('tags', []);
-
                 return $this->json(
-                    ActionPayload::success(['tags' => $tags])
+                    ActionPayload::success(['tags' => $this->resolveQueryParam('tags', [])])
                 );
             }
         };
 
         $result = $action($this->makeRequest('GET', '/items?tags[]=foo&tags[]=bar'), $this->makeResponse(), []);
 
-        $body = (string)$result->getBody();
-        $decoded = json_decode($body, true, 512, JSON_THROW_ON_ERROR);
+        self::assertSame(200, $result->getStatusCode());
+
+        $decoded = json_decode((string)$result->getBody(), true, 512, JSON_THROW_ON_ERROR);
 
         self::assertArrayHasKey('data', $decoded);
-        self::assertIsArray($decoded['data']['tags']);
         self::assertSame(['foo', 'bar'], $decoded['data']['tags']);
     }
 
     /**
-     * Asserts that resolveQueryParam returns the provided default when parameter is missing.
+     * Asserts that resolveQueryParam returns the provided default when the parameter is missing.
      */
     public function testResolveQueryParamReturnsDefaultWhenMissing(): void
     {
         $action = new class () extends AbstractAction {
             protected function handle(): ResponseInterface
             {
-                $page = $this->resolveQueryParam('page', 1);
-                $limit = $this->resolveQueryParam('limit', 20);
-                $sort = $this->resolveQueryParam('sort', 'asc');
-
                 return $this->json(
                     ActionPayload::success([
-                        'page' => $page,
-                        'limit' => $limit,
-                        'sort' => $sort,
+                        'page' => $this->resolveQueryParam('page', 1),
+                        'limit' => $this->resolveQueryParam('limit', 20),
+                        'sort' => $this->resolveQueryParam('sort', 'asc'),
                     ])
                 );
             }
@@ -515,8 +502,9 @@ final class AbstractActionTest extends TestCase
 
         $result = $action($this->makeRequest('GET', '/items'), $this->makeResponse(), []);
 
-        $body = (string)$result->getBody();
-        $decoded = json_decode($body, true, 512, JSON_THROW_ON_ERROR);
+        self::assertSame(200, $result->getStatusCode());
+
+        $decoded = json_decode((string)$result->getBody(), true, 512, JSON_THROW_ON_ERROR);
 
         self::assertArrayHasKey('data', $decoded);
         self::assertSame(1, $decoded['data']['page']);
@@ -525,27 +513,51 @@ final class AbstractActionTest extends TestCase
     }
 
     /**
-     * Asserts that resolveQueryParam returns null when explicitly provided as default.
+     * Asserts that resolveQueryParam returns null when explicitly provided as a default.
+     *
+     * This validates that null is treated as a real default value and not as
+     * an omitted argument, which would otherwise trigger the required-parameter exception.
      */
     public function testResolveQueryParamReturnsNullAsExplicitDefault(): void
     {
         $action = new class () extends AbstractAction {
             protected function handle(): ResponseInterface
             {
-                $filter = $this->resolveQueryParam('filter', null);
-
                 return $this->json(
-                    ActionPayload::success(['filter' => $filter])
+                    ActionPayload::success(['filter' => $this->resolveQueryParam('filter', null)])
                 );
             }
         };
 
         $result = $action($this->makeRequest('GET', '/items'), $this->makeResponse(), []);
 
-        $body = (string)$result->getBody();
-        $decoded = json_decode($body, true, 512, JSON_THROW_ON_ERROR);
+        self::assertSame(200, $result->getStatusCode());
+
+        $decoded = json_decode((string)$result->getBody(), true, 512, JSON_THROW_ON_ERROR);
 
         self::assertArrayHasKey('data', $decoded);
         self::assertNull($decoded['data']['filter']);
+    }
+
+    /**
+     * Asserts that resolveQueryParam throws when the parameter is absent and null is not
+     * explicitly passed — confirming that omission and explicit null are distinct.
+     */
+    public function testResolveQueryParamThrowsWhenMissingAndNullNotExplicitlyPassed(): void
+    {
+        $action = new class () extends AbstractAction {
+            protected function handle(): ResponseInterface
+            {
+                // No second argument — must throw even though the PHP default is null
+                $this->resolveQueryParam('filter');
+
+                return $this->json(ActionPayload::success([]));
+            }
+        };
+
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('Missing query parameter: filter');
+
+        $action($this->makeRequest('GET', '/items'), $this->makeResponse(), []);
     }
 }
