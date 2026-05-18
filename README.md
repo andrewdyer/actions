@@ -174,7 +174,7 @@ Helper methods are available for accessing request data in a consistent and pred
 Query parameters from the request URI can be accessed using two methods:
 
 - **`getQueryParams(): array`** — Returns all query parameters as an associative array
-- **`resolveQueryParam(string $name, mixed $default = self::REQUIRED): mixed`** — Retrieves a query parameter by name. If a default value is provided, the parameter is optional and the default is returned when missing. If no default value is provided, the parameter is required and a RuntimeException is thrown when missing.
+- **`resolveQueryParam(string $name, mixed $default = null): mixed`** — Retrieves a query parameter by name. If a default value is provided, the parameter is optional and the default is returned when missing. If no default value is provided, the parameter is required and a RuntimeException is thrown when missing.
 
 ### Example: Pagination and filtering
 
