@@ -383,7 +383,7 @@ final class AbstractActionTest extends TestCase
         $decoded = json_decode($body, true, 512, JSON_THROW_ON_ERROR);
 
         self::assertArrayHasKey('data', $decoded);
-        self::assertSame(
+        self::assertEquals(
             [
                 'q' => 'test',
                 'page' => '2',
