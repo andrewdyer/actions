@@ -15,6 +15,7 @@ use AndrewDyer\Actions\Payloads\ActionPayload;
 use JsonException;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 use RuntimeException;
 use Slim\Psr7\Factory\ResponseFactory;
 use Slim\Psr7\Factory\ServerRequestFactory;
@@ -24,21 +25,26 @@ use Slim\Psr7\Factory\ServerRequestFactory;
  */
 final class AbstractActionTest extends TestCase
 {
+    private function makeRequest(string $method, string $uri): ServerRequestInterface
+    {
+        return (new ServerRequestFactory())->createServerRequest($method, $uri);
+    }
+
+    private function makeResponse(): ResponseInterface
+    {
+        return (new ResponseFactory())->createResponse();
+    }
+
     /**
      * Asserts that json writes the expected headers and payload.
      */
     public function testJsonWritesPayloadAndHeaders(): void
     {
-        $serverRequestFactory = new ServerRequestFactory();
-        $request = $serverRequestFactory
-            ->createServerRequest('POST', '/things/42')
+        $request = $this->makeRequest('POST', '/things/42')
             ->withParsedBody(['name' => 'Widget']);
 
-        $responseFactory = new ResponseFactory();
-        $response = $responseFactory->createResponse();
-
         $action = new TestAction();
-        $result = $action($request, $response, ['thingId' => 42]);
+        $result = $action($request, $this->makeResponse(), ['thingId' => 42]);
 
         self::assertSame('application/json; charset=utf-8', $result->getHeaderLine('Content-Type'));
         self::assertSame(200, $result->getStatusCode());
@@ -66,20 +72,15 @@ final class AbstractActionTest extends TestCase
      */
     public function testGetParsedBodyThrowsWhenBodyIsNotArray(): void
     {
-        $serverRequestFactory = new ServerRequestFactory();
-        $request = $serverRequestFactory
-            ->createServerRequest('POST', '/things/42')
+        $request = $this->makeRequest('POST', '/things/42')
             ->withParsedBody((object)['name' => 'Widget']);
-
-        $responseFactory = new ResponseFactory();
-        $response = $responseFactory->createResponse();
 
         $action = new TestAction();
 
         $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('Request body must decode to an array.');
 
-        $action($request, $response, ['thingId' => 42]);
+        $action($request, $this->makeResponse(), ['thingId' => 42]);
     }
 
     /**
@@ -87,18 +88,12 @@ final class AbstractActionTest extends TestCase
      */
     public function testResolveArgThrowsWhenMissing(): void
     {
-        $serverRequestFactory = new ServerRequestFactory();
-        $request = $serverRequestFactory->createServerRequest('GET', '/missing');
-
-        $responseFactory = new ResponseFactory();
-        $response = $responseFactory->createResponse();
-
         $action = new TestAction();
 
         $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('Missing route argument: thingId');
 
-        $action($request, $response, []);
+        $action($this->makeRequest('GET', '/missing'), $this->makeResponse(), []);
     }
 
     /**
@@ -106,12 +101,6 @@ final class AbstractActionTest extends TestCase
      */
     public function testJsonThrowsWhenEncodingFails(): void
     {
-        $serverRequestFactory = new ServerRequestFactory();
-        $request = $serverRequestFactory->createServerRequest('GET', '/invalid');
-
-        $responseFactory = new ResponseFactory();
-        $response = $responseFactory->createResponse();
-
         $action = new class () extends AbstractAction {
             /**
              * Returns a response using json with an invalid UTF-8 payload to trigger a JSON encoding failure.
@@ -132,7 +121,7 @@ final class AbstractActionTest extends TestCase
 
         $this->expectException(JsonException::class);
 
-        $action($request, $response, []);
+        $action($this->makeRequest('GET', '/invalid'), $this->makeResponse(), []);
     }
 
     /**
@@ -140,12 +129,6 @@ final class AbstractActionTest extends TestCase
      */
     public function testCatchesBadRequestException(): void
     {
-        $serverRequestFactory = new ServerRequestFactory();
-        $request = $serverRequestFactory->createServerRequest('POST', '/invalid');
-
-        $responseFactory = new ResponseFactory();
-        $response = $responseFactory->createResponse();
-
         $action = new class () extends AbstractAction {
             protected function handle(): ResponseInterface
             {
@@ -153,7 +136,7 @@ final class AbstractActionTest extends TestCase
             }
         };
 
-        $result = $action($request, $response, []);
+        $result = $action($this->makeRequest('POST', '/invalid'), $this->makeResponse(), []);
 
         self::assertSame(400, $result->getStatusCode());
         self::assertSame('application/json; charset=utf-8', $result->getHeaderLine('Content-Type'));
@@ -172,12 +155,6 @@ final class AbstractActionTest extends TestCase
      */
     public function testCatchesForbiddenException(): void
     {
-        $serverRequestFactory = new ServerRequestFactory();
-        $request = $serverRequestFactory->createServerRequest('DELETE', '/admin/users/1');
-
-        $responseFactory = new ResponseFactory();
-        $response = $responseFactory->createResponse();
-
         $action = new class () extends AbstractAction {
             protected function handle(): ResponseInterface
             {
@@ -185,7 +162,7 @@ final class AbstractActionTest extends TestCase
             }
         };
 
-        $result = $action($request, $response, []);
+        $result = $action($this->makeRequest('DELETE', '/admin/users/1'), $this->makeResponse(), []);
 
         self::assertSame(403, $result->getStatusCode());
         self::assertSame('application/json; charset=utf-8', $result->getHeaderLine('Content-Type'));
@@ -204,12 +181,6 @@ final class AbstractActionTest extends TestCase
      */
     public function testCatchesNotFoundException(): void
     {
-        $serverRequestFactory = new ServerRequestFactory();
-        $request = $serverRequestFactory->createServerRequest('GET', '/users/999');
-
-        $responseFactory = new ResponseFactory();
-        $response = $responseFactory->createResponse();
-
         $action = new class () extends AbstractAction {
             protected function handle(): ResponseInterface
             {
@@ -217,7 +188,7 @@ final class AbstractActionTest extends TestCase
             }
         };
 
-        $result = $action($request, $response, []);
+        $result = $action($this->makeRequest('GET', '/users/999'), $this->makeResponse(), []);
 
         self::assertSame(404, $result->getStatusCode());
         self::assertSame('application/json; charset=utf-8', $result->getHeaderLine('Content-Type'));
@@ -236,12 +207,6 @@ final class AbstractActionTest extends TestCase
      */
     public function testCatchesNotImplementedException(): void
     {
-        $serverRequestFactory = new ServerRequestFactory();
-        $request = $serverRequestFactory->createServerRequest('POST', '/payments/refund');
-
-        $responseFactory = new ResponseFactory();
-        $response = $responseFactory->createResponse();
-
         $action = new class () extends AbstractAction {
             protected function handle(): ResponseInterface
             {
@@ -249,7 +214,7 @@ final class AbstractActionTest extends TestCase
             }
         };
 
-        $result = $action($request, $response, []);
+        $result = $action($this->makeRequest('POST', '/payments/refund'), $this->makeResponse(), []);
 
         self::assertSame(501, $result->getStatusCode());
         self::assertSame('application/json; charset=utf-8', $result->getHeaderLine('Content-Type'));
@@ -268,12 +233,6 @@ final class AbstractActionTest extends TestCase
      */
     public function testCatchesUnauthenticatedException(): void
     {
-        $serverRequestFactory = new ServerRequestFactory();
-        $request = $serverRequestFactory->createServerRequest('GET', '/protected');
-
-        $responseFactory = new ResponseFactory();
-        $response = $responseFactory->createResponse();
-
         $action = new class () extends AbstractAction {
             protected function handle(): ResponseInterface
             {
@@ -281,7 +240,7 @@ final class AbstractActionTest extends TestCase
             }
         };
 
-        $result = $action($request, $response, []);
+        $result = $action($this->makeRequest('GET', '/protected'), $this->makeResponse(), []);
 
         self::assertSame(401, $result->getStatusCode());
         self::assertSame('application/json; charset=utf-8', $result->getHeaderLine('Content-Type'));
@@ -300,12 +259,6 @@ final class AbstractActionTest extends TestCase
      */
     public function testCatchesExceptionWithEmptyMessage(): void
     {
-        $serverRequestFactory = new ServerRequestFactory();
-        $request = $serverRequestFactory->createServerRequest('GET', '/users/999');
-
-        $responseFactory = new ResponseFactory();
-        $response = $responseFactory->createResponse();
-
         $action = new class () extends AbstractAction {
             protected function handle(): ResponseInterface
             {
@@ -313,7 +266,7 @@ final class AbstractActionTest extends TestCase
             }
         };
 
-        $result = $action($request, $response, []);
+        $result = $action($this->makeRequest('GET', '/users/999'), $this->makeResponse(), []);
 
         self::assertSame(404, $result->getStatusCode());
 
@@ -330,12 +283,6 @@ final class AbstractActionTest extends TestCase
      */
     public function testCatchesExceptionWithZeroMessage(): void
     {
-        $serverRequestFactory = new ServerRequestFactory();
-        $request = $serverRequestFactory->createServerRequest('GET', '/items/0');
-
-        $responseFactory = new ResponseFactory();
-        $response = $responseFactory->createResponse();
-
         $action = new class () extends AbstractAction {
             protected function handle(): ResponseInterface
             {
@@ -343,7 +290,7 @@ final class AbstractActionTest extends TestCase
             }
         };
 
-        $result = $action($request, $response, []);
+        $result = $action($this->makeRequest('GET', '/items/0'), $this->makeResponse(), []);
 
         self::assertSame(404, $result->getStatusCode());
 
@@ -360,12 +307,6 @@ final class AbstractActionTest extends TestCase
      */
     public function testGetQueryParamsReturnsParameters(): void
     {
-        $serverRequestFactory = new ServerRequestFactory();
-        $request = $serverRequestFactory->createServerRequest('GET', '/search?q=test&page=2&limit=10');
-
-        $responseFactory = new ResponseFactory();
-        $response = $responseFactory->createResponse();
-
         $action = new class () extends AbstractAction {
             protected function handle(): ResponseInterface
             {
@@ -377,7 +318,7 @@ final class AbstractActionTest extends TestCase
             }
         };
 
-        $result = $action($request, $response, []);
+        $result = $action($this->makeRequest('GET', '/search?q=test&page=2&limit=10'), $this->makeResponse(), []);
 
         $body = (string)$result->getBody();
         $decoded = json_decode($body, true, 512, JSON_THROW_ON_ERROR);
@@ -398,12 +339,6 @@ final class AbstractActionTest extends TestCase
      */
     public function testGetQueryParamsReturnsEmptyArrayWhenNoParameters(): void
     {
-        $serverRequestFactory = new ServerRequestFactory();
-        $request = $serverRequestFactory->createServerRequest('GET', '/items');
-
-        $responseFactory = new ResponseFactory();
-        $response = $responseFactory->createResponse();
-
         $action = new class () extends AbstractAction {
             protected function handle(): ResponseInterface
             {
@@ -415,7 +350,7 @@ final class AbstractActionTest extends TestCase
             }
         };
 
-        $result = $action($request, $response, []);
+        $result = $action($this->makeRequest('GET', '/items'), $this->makeResponse(), []);
 
         $body = (string)$result->getBody();
         $decoded = json_decode($body, true, 512, JSON_THROW_ON_ERROR);
@@ -429,12 +364,6 @@ final class AbstractActionTest extends TestCase
      */
     public function testResolveQueryParamReturnsParameter(): void
     {
-        $serverRequestFactory = new ServerRequestFactory();
-        $request = $serverRequestFactory->createServerRequest('GET', '/search?q=test&category=books');
-
-        $responseFactory = new ResponseFactory();
-        $response = $responseFactory->createResponse();
-
         $action = new class () extends AbstractAction {
             protected function handle(): ResponseInterface
             {
@@ -450,7 +379,7 @@ final class AbstractActionTest extends TestCase
             }
         };
 
-        $result = $action($request, $response, []);
+        $result = $action($this->makeRequest('GET', '/search?q=test&category=books'), $this->makeResponse(), []);
 
         $body = (string)$result->getBody();
         $decoded = json_decode($body, true, 512, JSON_THROW_ON_ERROR);
@@ -465,12 +394,6 @@ final class AbstractActionTest extends TestCase
      */
     public function testResolveQueryParamThrowsWhenMissing(): void
     {
-        $serverRequestFactory = new ServerRequestFactory();
-        $request = $serverRequestFactory->createServerRequest('GET', '/search?q=test');
-
-        $responseFactory = new ResponseFactory();
-        $response = $responseFactory->createResponse();
-
         $action = new class () extends AbstractAction {
             protected function handle(): ResponseInterface
             {
@@ -483,7 +406,7 @@ final class AbstractActionTest extends TestCase
         $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('Missing query parameter: missing');
 
-        $action($request, $response, []);
+        $action($this->makeRequest('GET', '/search?q=test'), $this->makeResponse(), []);
     }
 
     /**
@@ -491,12 +414,6 @@ final class AbstractActionTest extends TestCase
      */
     public function testResolveQueryParamReturnsArrayValues(): void
     {
-        $serverRequestFactory = new ServerRequestFactory();
-        $request = $serverRequestFactory->createServerRequest('GET', '/items?tags[]=foo&tags[]=bar&tags[]=baz');
-
-        $responseFactory = new ResponseFactory();
-        $response = $responseFactory->createResponse();
-
         $action = new class () extends AbstractAction {
             protected function handle(): ResponseInterface
             {
@@ -508,7 +425,7 @@ final class AbstractActionTest extends TestCase
             }
         };
 
-        $result = $action($request, $response, []);
+        $result = $action($this->makeRequest('GET', '/items?tags[]=foo&tags[]=bar&tags[]=baz'), $this->makeResponse(), []);
 
         $body = (string)$result->getBody();
         $decoded = json_decode($body, true, 512, JSON_THROW_ON_ERROR);
@@ -523,12 +440,6 @@ final class AbstractActionTest extends TestCase
      */
     public function testResolveQueryParamReturnsOptionalParameter(): void
     {
-        $serverRequestFactory = new ServerRequestFactory();
-        $request = $serverRequestFactory->createServerRequest('GET', '/items?page=2&limit=10');
-
-        $responseFactory = new ResponseFactory();
-        $response = $responseFactory->createResponse();
-
         $action = new class () extends AbstractAction {
             protected function handle(): ResponseInterface
             {
@@ -544,7 +455,7 @@ final class AbstractActionTest extends TestCase
             }
         };
 
-        $result = $action($request, $response, []);
+        $result = $action($this->makeRequest('GET', '/items?page=2&limit=10'), $this->makeResponse(), []);
 
         $body = (string)$result->getBody();
         $decoded = json_decode($body, true, 512, JSON_THROW_ON_ERROR);
@@ -559,12 +470,6 @@ final class AbstractActionTest extends TestCase
      */
     public function testResolveQueryParamReturnsOptionalArrayValues(): void
     {
-        $serverRequestFactory = new ServerRequestFactory();
-        $request = $serverRequestFactory->createServerRequest('GET', '/items?tags[]=foo&tags[]=bar');
-
-        $responseFactory = new ResponseFactory();
-        $response = $responseFactory->createResponse();
-
         $action = new class () extends AbstractAction {
             protected function handle(): ResponseInterface
             {
@@ -576,7 +481,7 @@ final class AbstractActionTest extends TestCase
             }
         };
 
-        $result = $action($request, $response, []);
+        $result = $action($this->makeRequest('GET', '/items?tags[]=foo&tags[]=bar'), $this->makeResponse(), []);
 
         $body = (string)$result->getBody();
         $decoded = json_decode($body, true, 512, JSON_THROW_ON_ERROR);
@@ -591,12 +496,6 @@ final class AbstractActionTest extends TestCase
      */
     public function testResolveQueryParamReturnsDefaultWhenMissing(): void
     {
-        $serverRequestFactory = new ServerRequestFactory();
-        $request = $serverRequestFactory->createServerRequest('GET', '/items');
-
-        $responseFactory = new ResponseFactory();
-        $response = $responseFactory->createResponse();
-
         $action = new class () extends AbstractAction {
             protected function handle(): ResponseInterface
             {
@@ -614,7 +513,7 @@ final class AbstractActionTest extends TestCase
             }
         };
 
-        $result = $action($request, $response, []);
+        $result = $action($this->makeRequest('GET', '/items'), $this->makeResponse(), []);
 
         $body = (string)$result->getBody();
         $decoded = json_decode($body, true, 512, JSON_THROW_ON_ERROR);
@@ -630,12 +529,6 @@ final class AbstractActionTest extends TestCase
      */
     public function testResolveQueryParamReturnsNullAsExplicitDefault(): void
     {
-        $serverRequestFactory = new ServerRequestFactory();
-        $request = $serverRequestFactory->createServerRequest('GET', '/items');
-
-        $responseFactory = new ResponseFactory();
-        $response = $responseFactory->createResponse();
-
         $action = new class () extends AbstractAction {
             protected function handle(): ResponseInterface
             {
@@ -647,7 +540,7 @@ final class AbstractActionTest extends TestCase
             }
         };
 
-        $result = $action($request, $response, []);
+        $result = $action($this->makeRequest('GET', '/items'), $this->makeResponse(), []);
 
         $body = (string)$result->getBody();
         $decoded = json_decode($body, true, 512, JSON_THROW_ON_ERROR);
