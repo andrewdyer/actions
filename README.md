@@ -234,7 +234,7 @@ Accept: application/json
 
 ### Example: Array query parameters
 
-Query parameters may also contain array values (for example, `?tags[]=foo&tags[]=bar`):
+Query parameters may also contain array values (for example, `?tags[]=foo&tags[]=bar&tags[]=baz`):
 
 ```php
 protected function handle(): ResponseInterface
