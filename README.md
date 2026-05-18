@@ -169,6 +169,107 @@ For full control over the payload, call `json(ActionPayloadInterface $payload)` 
 
 Helper methods are available for accessing request data in a consistent and predictable manner.
 
+### Route arguments
+
+Route arguments are extracted from the URL pattern matched by your router (e.g., `/users/{id}`).
+
+- **`getArgs(): array`** — Returns all route arguments as an associative array
+- **`resolveArg(string $name): string|int`** — Retrieves a route argument by name. Throws a RuntimeException if the argument is missing.
+
+#### Example: Fetching a resource by ID
+
+```php
+declare(strict_types=1);
+
+namespace App\Http\Actions;
+
+use AndrewDyer\Actions\AbstractAction;
+use Psr\Http\Message\ResponseInterface;
+
+final class GetOrderAction extends AbstractAction
+{
+    protected function handle(): ResponseInterface
+    {
+        // Extract the order ID from the route
+        $orderId = (int) $this->resolveArg('id');
+
+        // Your domain logic here...
+        $order = $this->fetchOrder($orderId);
+
+        return $this->ok($order);
+    }
+}
+```
+
+**Request:**
+
+```
+GET /orders/12345
+Accept: application/json
+```
+
+### Request body
+
+The request body can be accessed as an associative array using `getParsedBody()`.
+
+- **`getParsedBody(): array`** — Returns the parsed request body as an array. Returns an empty array if no body is present. Throws a RuntimeException if the body cannot be parsed as an array.
+- **`resolveBodyParam(string $name, mixed $default = null): mixed`** — Retrieves a body parameter by name. If a default value is provided, the parameter is optional and the default is returned when missing. If no default value is provided, the parameter is required and a RuntimeException is thrown when missing.
+
+#### Example: Creating a resource
+
+```php
+declare(strict_types=1);
+
+namespace App\Http\Actions;
+
+use AndrewDyer\Actions\AbstractAction;
+use Psr\Http\Message\ResponseInterface;
+
+final class CreateProductAction extends AbstractAction
+{
+    protected function handle(): ResponseInterface
+    {
+        // Required parameters (throw exception if missing)
+        $name = $this->resolveBodyParam('name');
+        $price = $this->resolveBodyParam('price');
+
+        // Optional parameter with default
+        $description = $this->resolveBodyParam('description', 'No description provided');
+
+        // Your domain logic here...
+        $product = $this->createProduct($name, (float) $price, $description);
+
+        return $this->ok($product, 201);
+    }
+}
+```
+
+**Request:**
+
+```
+POST /products
+Accept: application/json
+Content-Type: application/json
+
+{
+  "name": "Wireless Mouse",
+  "price": 29.99
+}
+```
+
+**Response: 201 Created**
+
+```json
+{
+  "data": {
+    "id": 456,
+    "name": "Wireless Mouse",
+    "description": "No description provided",
+    "price": 29.99
+  }
+}
+```
+
 ### Query parameters
 
 Query parameters from the request URI can be accessed using two methods:
@@ -176,7 +277,7 @@ Query parameters from the request URI can be accessed using two methods:
 - **`getQueryParams(): array`** — Returns all query parameters as an associative array
 - **`resolveQueryParam(string $name, mixed $default = null): mixed`** — Retrieves a query parameter by name. If a default value is provided, the parameter is optional and the default is returned when missing. If no default value is provided, the parameter is required and a RuntimeException is thrown when missing.
 
-### Example: Pagination and filtering
+#### Example: Pagination and filtering
 
 ```php
 declare(strict_types=1);
@@ -232,7 +333,7 @@ Accept: application/json
 }
 ```
 
-### Example: Array query parameters
+#### Example: Array query parameters
 
 Query parameters may also contain array values (for example, `?tags[]=foo&tags[]=bar&tags[]=baz`):
 
