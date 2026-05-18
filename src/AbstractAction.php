@@ -152,6 +152,34 @@ abstract class AbstractAction
     }
 
     /**
+     * Retrieves a body parameter by name with optional default fallback.
+     *
+     * @param string $name    The name of the body parameter to retrieve.
+     * @param mixed  $default The value to return if the parameter is absent.
+     *                        If omitted entirely, the parameter is treated as required
+     *                        and a RuntimeException is thrown when missing. Explicitly
+     *                        passing null is valid and will be returned as the default.
+     *
+     * @return mixed            The body parameter value if present, or the default value otherwise.
+     * @throws RuntimeException When the parameter is absent and no default is provided.
+     */
+    protected function resolveBodyParam(string $name, mixed $default = null): mixed
+    {
+        $body = $this->getParsedBody();
+        $missing = !array_key_exists($name, $body);
+
+        if ($missing) {
+            if (func_num_args() < 2) {
+                throw new RuntimeException("Missing body parameter: {$name}");
+            }
+
+            return $default;
+        }
+
+        return $body[$name];
+    }
+
+    /**
      * Retrieves a query parameter by name with optional default fallback.
      *
      * @param string $name    The name of the query parameter to retrieve.

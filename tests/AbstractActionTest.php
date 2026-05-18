@@ -117,6 +117,151 @@ final class AbstractActionTest extends TestCase
     }
 
     /**
+     * Asserts that resolveBodyParam successfully retrieves a present required parameter.
+     */
+    public function testResolveBodyParamReturnsParameter(): void
+    {
+        $request = $this->makeRequest('POST', '/products')
+            ->withParsedBody(['name' => 'Laptop', 'price' => 999.99]);
+
+        $action = new class () extends AbstractAction {
+            protected function handle(): ResponseInterface
+            {
+                return $this->json(
+                    ActionPayload::success([
+                        'name' => $this->resolveBodyParam('name'),
+                        'price' => $this->resolveBodyParam('price'),
+                    ])
+                );
+            }
+        };
+
+        $result = $action($request, $this->makeResponse(), []);
+
+        self::assertSame(200, $result->getStatusCode());
+
+        $decoded = json_decode((string)$result->getBody(), true, 512, JSON_THROW_ON_ERROR);
+
+        self::assertArrayHasKey('data', $decoded);
+        self::assertSame('Laptop', $decoded['data']['name']);
+        self::assertSame(999.99, $decoded['data']['price']);
+    }
+
+    /**
+     * Asserts that resolveBodyParam throws when the parameter is absent and no default is provided.
+     */
+    public function testResolveBodyParamThrowsWhenMissing(): void
+    {
+        $request = $this->makeRequest('POST', '/products')
+            ->withParsedBody(['name' => 'Laptop']);
+
+        $action = new class () extends AbstractAction {
+            protected function handle(): ResponseInterface
+            {
+                $this->resolveBodyParam('price');
+
+                return $this->json(ActionPayload::success([]));
+            }
+        };
+
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('Missing body parameter: price');
+
+        $action($request, $this->makeResponse(), []);
+    }
+
+    /**
+     * Asserts that resolveBodyParam returns an existing optional parameter (not the default).
+     */
+    public function testResolveBodyParamReturnsOptionalParameter(): void
+    {
+        $request = $this->makeRequest('POST', '/products')
+            ->withParsedBody(['name' => 'Laptop', 'description' => 'A powerful laptop']);
+
+        $action = new class () extends AbstractAction {
+            protected function handle(): ResponseInterface
+            {
+                return $this->json(
+                    ActionPayload::success([
+                        'name' => $this->resolveBodyParam('name'),
+                        'description' => $this->resolveBodyParam('description', ''),
+                    ])
+                );
+            }
+        };
+
+        $result = $action($request, $this->makeResponse(), []);
+
+        self::assertSame(200, $result->getStatusCode());
+
+        $decoded = json_decode((string)$result->getBody(), true, 512, JSON_THROW_ON_ERROR);
+
+        self::assertArrayHasKey('data', $decoded);
+        self::assertSame('Laptop', $decoded['data']['name']);
+        self::assertSame('A powerful laptop', $decoded['data']['description']);
+    }
+
+    /**
+     * Asserts that resolveBodyParam returns the provided default when the parameter is missing.
+     */
+    public function testResolveBodyParamReturnsDefaultWhenMissing(): void
+    {
+        $request = $this->makeRequest('POST', '/products')
+            ->withParsedBody(['name' => 'Laptop']);
+
+        $action = new class () extends AbstractAction {
+            protected function handle(): ResponseInterface
+            {
+                return $this->json(
+                    ActionPayload::success([
+                        'name' => $this->resolveBodyParam('name'),
+                        'description' => $this->resolveBodyParam('description', 'No description provided'),
+                        'inStock' => $this->resolveBodyParam('inStock', true),
+                    ])
+                );
+            }
+        };
+
+        $result = $action($request, $this->makeResponse(), []);
+
+        self::assertSame(200, $result->getStatusCode());
+
+        $decoded = json_decode((string)$result->getBody(), true, 512, JSON_THROW_ON_ERROR);
+
+        self::assertArrayHasKey('data', $decoded);
+        self::assertSame('Laptop', $decoded['data']['name']);
+        self::assertSame('No description provided', $decoded['data']['description']);
+        self::assertTrue($decoded['data']['inStock']);
+    }
+
+    /**
+     * Asserts that resolveBodyParam returns null when explicitly provided as a default.
+     */
+    public function testResolveBodyParamReturnsNullAsExplicitDefault(): void
+    {
+        $request = $this->makeRequest('POST', '/products')
+            ->withParsedBody(['name' => 'Laptop']);
+
+        $action = new class () extends AbstractAction {
+            protected function handle(): ResponseInterface
+            {
+                return $this->json(
+                    ActionPayload::success(['discount' => $this->resolveBodyParam('discount', null)])
+                );
+            }
+        };
+
+        $result = $action($request, $this->makeResponse(), []);
+
+        self::assertSame(200, $result->getStatusCode());
+
+        $decoded = json_decode((string)$result->getBody(), true, 512, JSON_THROW_ON_ERROR);
+
+        self::assertArrayHasKey('data', $decoded);
+        self::assertNull($decoded['data']['discount']);
+    }
+
+    /**
      * Asserts that getArgs returns route arguments from the matched URL pattern.
      */
     public function testGetArgsReturnsArguments(): void
