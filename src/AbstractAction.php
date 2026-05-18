@@ -114,6 +114,16 @@ abstract class AbstractAction
     }
 
     /**
+     * Returns the query parameters from the request URI.
+     *
+     * @return array The decoded key-value pairs from the query string.
+     */
+    protected function getQueryParams(): array
+    {
+        return $this->request->getQueryParams();
+    }
+
+    /**
      * Resolves a required route argument by name.
      *
      * @param string $name The name of the route argument to retrieve.
@@ -129,6 +139,34 @@ abstract class AbstractAction
         }
 
         return $this->args[$name];
+    }
+
+    /**
+     * Retrieves a query parameter by name with optional default fallback.
+     *
+     * @param string $name    The name of the query parameter to retrieve.
+     * @param mixed  $default The value to return if the parameter is absent.
+     *                        If omitted entirely, the parameter is treated as required
+     *                        and a RuntimeException is thrown when missing. Explicitly
+     *                        passing null is valid and will be returned as the default.
+     *
+     * @return mixed            The query parameter value if present, or the default value otherwise.
+     * @throws RuntimeException When the parameter is absent and no default is provided.
+     */
+    protected function resolveQueryParam(string $name, mixed $default = null): mixed
+    {
+        $params = $this->getQueryParams();
+        $missing = !array_key_exists($name, $params);
+
+        if ($missing) {
+            if (func_num_args() < 2) {
+                throw new RuntimeException("Missing query parameter: {$name}");
+            }
+
+            return $default;
+        }
+
+        return $params[$name];
     }
 
     /**
