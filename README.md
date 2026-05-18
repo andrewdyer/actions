@@ -174,7 +174,7 @@ Helper methods are available for accessing request data in a consistent and pred
 Query parameters from the request URI can be accessed using two methods:
 
 - **`getQueryParams(): array`** — Returns all query parameters as an associative array
-- **`resolveQueryParam(string $name): string|array`** — Retrieves a specific query parameter by name, throwing a `RuntimeException` if the parameter is not present
+- **`resolveQueryParam(string $name, mixed $default = self::REQUIRED): mixed`** — Retrieves a query parameter by name. If a default value is provided, the parameter is optional and the default is returned when missing. If no default value is provided, the parameter is required and a RuntimeException is thrown when missing.
 
 ### Example: Pagination and filtering
 
@@ -190,15 +190,12 @@ final class ListProductsAction extends AbstractAction
 {
     protected function handle(): ResponseInterface
     {
-        // Get all query parameters
-        $queryParams = $this->getQueryParams();
-
-        // Resolve specific required parameters
+        // Required parameter (throws exception if missing)
         $category = $this->resolveQueryParam('category');
 
         // Optional parameters with defaults
-        $page = $queryParams['page'] ?? 1;
-        $limit = $queryParams['limit'] ?? 20;
+        $page = $this->resolveQueryParam('page', 1);
+        $limit = $this->resolveQueryParam('limit', 20);
 
         // Your domain logic here...
         $products = $this->fetchProducts($category, (int) $page, (int) $limit);

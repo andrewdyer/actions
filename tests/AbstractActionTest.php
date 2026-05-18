@@ -425,7 +425,7 @@ final class AbstractActionTest extends TestCase
     }
 
     /**
-     * Asserts that resolveQueryParam successfully retrieves a query parameter.
+     * Asserts that resolveQueryParam successfully retrieves a required query parameter.
      */
     public function testResolveQueryParamReturnsParameter(): void
     {
@@ -461,7 +461,7 @@ final class AbstractActionTest extends TestCase
     }
 
     /**
-     * Asserts that resolveQueryParam throws when the parameter is absent.
+     * Asserts that resolveQueryParam throws when the parameter is absent and no default is provided.
      */
     public function testResolveQueryParamThrowsWhenMissing(): void
     {
@@ -516,5 +516,143 @@ final class AbstractActionTest extends TestCase
         self::assertArrayHasKey('data', $decoded);
         self::assertIsArray($decoded['data']['tags']);
         self::assertSame(['foo', 'bar', 'baz'], $decoded['data']['tags']);
+    }
+
+    /**
+     * Asserts that resolveQueryParam returns an existing optional query parameter.
+     */
+    public function testResolveQueryParamReturnsOptionalParameter(): void
+    {
+        $serverRequestFactory = new ServerRequestFactory();
+        $request = $serverRequestFactory->createServerRequest('GET', '/items?page=2&limit=10');
+
+        $responseFactory = new ResponseFactory();
+        $response = $responseFactory->createResponse();
+
+        $action = new class () extends AbstractAction {
+            protected function handle(): ResponseInterface
+            {
+                $page = $this->resolveQueryParam('page', 1);
+                $limit = $this->resolveQueryParam('limit', 20);
+
+                return $this->json(
+                    ActionPayload::success([
+                        'page' => $page,
+                        'limit' => $limit,
+                    ])
+                );
+            }
+        };
+
+        $result = $action($request, $response, []);
+
+        $body = (string)$result->getBody();
+        $decoded = json_decode($body, true, 512, JSON_THROW_ON_ERROR);
+
+        self::assertArrayHasKey('data', $decoded);
+        self::assertSame('2', $decoded['data']['page']);
+        self::assertSame('10', $decoded['data']['limit']);
+    }
+
+    /**
+     * Asserts that resolveQueryParam returns array values from optional query parameters.
+     */
+    public function testResolveQueryParamReturnsOptionalArrayValues(): void
+    {
+        $serverRequestFactory = new ServerRequestFactory();
+        $request = $serverRequestFactory->createServerRequest('GET', '/items?tags[]=foo&tags[]=bar');
+
+        $responseFactory = new ResponseFactory();
+        $response = $responseFactory->createResponse();
+
+        $action = new class () extends AbstractAction {
+            protected function handle(): ResponseInterface
+            {
+                $tags = $this->resolveQueryParam('tags', []);
+
+                return $this->json(
+                    ActionPayload::success(['tags' => $tags])
+                );
+            }
+        };
+
+        $result = $action($request, $response, []);
+
+        $body = (string)$result->getBody();
+        $decoded = json_decode($body, true, 512, JSON_THROW_ON_ERROR);
+
+        self::assertArrayHasKey('data', $decoded);
+        self::assertIsArray($decoded['data']['tags']);
+        self::assertSame(['foo', 'bar'], $decoded['data']['tags']);
+    }
+
+    /**
+     * Asserts that resolveQueryParam returns the provided default when parameter is missing.
+     */
+    public function testResolveQueryParamReturnsDefaultWhenMissing(): void
+    {
+        $serverRequestFactory = new ServerRequestFactory();
+        $request = $serverRequestFactory->createServerRequest('GET', '/items');
+
+        $responseFactory = new ResponseFactory();
+        $response = $responseFactory->createResponse();
+
+        $action = new class () extends AbstractAction {
+            protected function handle(): ResponseInterface
+            {
+                $page = $this->resolveQueryParam('page', 1);
+                $limit = $this->resolveQueryParam('limit', 20);
+                $sort = $this->resolveQueryParam('sort', 'asc');
+
+                return $this->json(
+                    ActionPayload::success([
+                        'page' => $page,
+                        'limit' => $limit,
+                        'sort' => $sort,
+                    ])
+                );
+            }
+        };
+
+        $result = $action($request, $response, []);
+
+        $body = (string)$result->getBody();
+        $decoded = json_decode($body, true, 512, JSON_THROW_ON_ERROR);
+
+        self::assertArrayHasKey('data', $decoded);
+        self::assertSame(1, $decoded['data']['page']);
+        self::assertSame(20, $decoded['data']['limit']);
+        self::assertSame('asc', $decoded['data']['sort']);
+    }
+
+    /**
+     * Asserts that resolveQueryParam returns null when explicitly provided as default.
+     */
+    public function testResolveQueryParamReturnsNullAsExplicitDefault(): void
+    {
+        $serverRequestFactory = new ServerRequestFactory();
+        $request = $serverRequestFactory->createServerRequest('GET', '/items');
+
+        $responseFactory = new ResponseFactory();
+        $response = $responseFactory->createResponse();
+
+        $action = new class () extends AbstractAction {
+            protected function handle(): ResponseInterface
+            {
+                $filter = $this->resolveQueryParam('filter', null);
+
+                return $this->json(
+                    ActionPayload::success(['filter' => $filter])
+                );
+            }
+        };
+
+        $result = $action($request, $response, []);
+
+        $body = (string)$result->getBody();
+        $decoded = json_decode($body, true, 512, JSON_THROW_ON_ERROR);
+
+        self::assertArrayHasKey('data', $decoded);
+        self::assertNull($decoded['data']['filter']);
     }
 }

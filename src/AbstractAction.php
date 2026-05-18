@@ -25,6 +25,11 @@ abstract class AbstractAction
     use RespondsWithJson;
 
     /**
+     * Sentinel value used to indicate a required query parameter.
+     */
+    private const string REQUIRED = '__REQUIRED__';
+
+    /**
      * Route arguments resolved from the matched URL pattern.
      */
     private array $args = [];
@@ -142,20 +147,26 @@ abstract class AbstractAction
     }
 
     /**
-     * Resolves a required query parameter by name.
+     * Retrieves a query parameter by name with optional default fallback.
      *
-     * @param string $name The name of the query parameter to retrieve.
+     * @param string $name    The name of the query parameter to retrieve.
+     * @param mixed  $default The value to return if the parameter is absent.
+     *                        If omitted, the parameter is treated as required and a RuntimeException is thrown when missing.
      *
-     * @throws RuntimeException When the parameter is absent from the query string.
+     * @throws RuntimeException When the parameter is absent and no default is provided.
      *
-     * @return string|array The resolved query parameter value.
+     * @return mixed The query parameter value if present, or the default value otherwise.
      */
-    protected function resolveQueryParam(string $name): string|array
+    protected function resolveQueryParam(string $name, mixed $default = self::REQUIRED): mixed
     {
-        $params = $this->request->getQueryParams();
+        $params = $this->getQueryParams();
 
         if (!array_key_exists($name, $params)) {
-            throw new RuntimeException("Missing query parameter: {$name}");
+            if ($default === self::REQUIRED) {
+                throw new RuntimeException("Missing query parameter: {$name}");
+            }
+
+            return $default;
         }
 
         return $params[$name];
