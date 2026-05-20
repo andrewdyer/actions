@@ -96,13 +96,59 @@ final class RespondsWithJsonTest extends TestCase
         $action = new class () extends AbstractAction {
             protected function handle(): ResponseInterface
             {
-                return $this->ok(['id' => 1], 201);
+                return $this->ok(['id' => 1], null, 201);
             }
         };
 
         $response = $this->dispatch($action);
 
         self::assertSame(201, $response->getStatusCode());
+    }
+
+    /**
+     * Asserts that ok method includes meta when provided.
+     */
+    public function testOkIncludesMeta(): void
+    {
+        $action = new class () extends AbstractAction {
+            protected function handle(): ResponseInterface
+            {
+                return $this->ok(
+                    ['items' => ['a', 'b']],
+                    ['total' => 10, 'page' => 1]
+                );
+            }
+        };
+
+        $response = $this->dispatch($action);
+
+        self::assertSame(200, $response->getStatusCode());
+        self::assertSame(
+            [
+                'data' => ['items' => ['a', 'b']],
+                'meta' => ['total' => 10, 'page' => 1],
+            ],
+            $this->decodeBody($response)
+        );
+    }
+
+    /**
+     * Asserts that ok method excludes meta when null.
+     */
+    public function testOkExcludesMetaWhenNull(): void
+    {
+        $action = new class () extends AbstractAction {
+            protected function handle(): ResponseInterface
+            {
+                return $this->ok(['message' => 'success'], null);
+            }
+        };
+
+        $response = $this->dispatch($action);
+
+        $body = $this->decodeBody($response);
+        self::assertArrayHasKey('data', $body);
+        self::assertArrayNotHasKey('meta', $body);
     }
 
     /**

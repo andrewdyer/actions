@@ -44,15 +44,16 @@ trait RespondsWithJson
      * Responds with a 200 OK JSON payload containing the given data.
      *
      * @param mixed $data       The response data to include in the payload.
+     * @param mixed $meta       Optional metadata to include alongside the data.
      * @param int   $statusCode The HTTP status code, defaults to 200.
      *
      * @throws JsonException When the payload cannot be JSON-encoded.
      *
      * @return ResponseInterface The JSON response.
      */
-    protected function ok(mixed $data, int $statusCode = 200): ResponseInterface
+    protected function ok(mixed $data, mixed $meta = null, int $statusCode = 200): ResponseInterface
     {
-        return $this->json(ActionPayload::success($data, null, $statusCode));
+        return $this->json(ActionPayload::success($data, $meta, $statusCode));
     }
 
     /**
