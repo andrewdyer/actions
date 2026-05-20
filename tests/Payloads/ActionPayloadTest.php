@@ -22,7 +22,7 @@ final class ActionPayloadTest extends TestCase
      */
     public function testSuccessPayload(): void
     {
-        $payload = ActionPayload::success(['foo' => 'bar'], 201);
+        $payload = ActionPayload::success(['foo' => 'bar'], null, 201);
 
         self::assertSame(201, $payload->getStatusCode());
         self::assertSame(['data' => ['foo' => 'bar']], $payload->jsonSerialize());
@@ -81,6 +81,94 @@ final class ActionPayloadTest extends TestCase
         self::assertJson($json);
         self::assertSame(
             ['data' => ['ok' => true]],
+            json_decode($json, true)
+        );
+    }
+
+    /**
+     * Confirms success payloads with meta include both data and meta fields.
+     *
+     * @return void
+     */
+    public function testSuccessPayloadWithMeta(): void
+    {
+        $data = [
+            ['id' => 1, 'name' => 'Alice'],
+            ['id' => 2, 'name' => 'Bob'],
+        ];
+        $meta = [
+            'total' => 5,
+            'page' => 1,
+            'perPage' => 2,
+            'totalPages' => 3,
+        ];
+
+        $payload = ActionPayload::success($data, $meta, 200);
+
+        self::assertSame(200, $payload->getStatusCode());
+        self::assertSame(
+            [
+                'data' => $data,
+                'meta' => $meta,
+            ],
+            $payload->jsonSerialize()
+        );
+    }
+
+    /**
+     * Ensures meta is excluded when not provided (backwards compatibility).
+     *
+     * @return void
+     */
+    public function testSuccessPayloadWithoutMetaExcludesMetaField(): void
+    {
+        $payload = ActionPayload::success(['foo' => 'bar']);
+
+        $serialized = $payload->jsonSerialize();
+
+        self::assertArrayHasKey('data', $serialized);
+        self::assertArrayNotHasKey('meta', $serialized);
+    }
+
+    /**
+     * Verifies meta preserves falsy values during serialization.
+     *
+     * @return void
+     */
+    public function testMetaPreservesFalsyValues(): void
+    {
+        $meta = [
+            'hasMore' => false,
+            'offset' => 0,
+            'query' => '',
+        ];
+
+        $payload = ActionPayload::success(['items' => []], $meta, 200);
+
+        $serialized = $payload->jsonSerialize();
+
+        self::assertSame($meta, $serialized['meta']);
+    }
+
+    /**
+     * Checks that toJson produces valid JSON with meta field.
+     *
+     * @return void
+     */
+    public function testToJsonWithMetaProducesValidJson(): void
+    {
+        $data = ['users' => []];
+        $meta = ['total' => 0];
+        $payload = ActionPayload::success($data, $meta, 200);
+
+        $json = $payload->toJson();
+
+        self::assertJson($json);
+        self::assertSame(
+            [
+                'data' => $data,
+                'meta' => $meta,
+            ],
             json_decode($json, true)
         );
     }

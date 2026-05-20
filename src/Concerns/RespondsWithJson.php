@@ -52,7 +52,7 @@ trait RespondsWithJson
      */
     protected function ok(mixed $data, int $statusCode = 200): ResponseInterface
     {
-        return $this->json(ActionPayload::success($data, $statusCode));
+        return $this->json(ActionPayload::success($data, null, $statusCode));
     }
 
     /**
