@@ -20,11 +20,13 @@ final readonly class ActionPayload implements ActionPayloadInterface
      * @param mixed                     $data       The response data to include, or null when no data is applicable.
      * @param int                       $statusCode The HTTP status code for the response.
      * @param ActionErrorInterface|null $error      An optional structured error to attach for failure responses.
+     * @param mixed                     $meta       Optional metadata to include alongside the data.
      */
     public function __construct(
         private mixed $data = null,
         private int $statusCode = 200,
-        private ?ActionErrorInterface $error = null
+        private ?ActionErrorInterface $error = null,
+        private mixed $meta = null
     ) {
     }
 
@@ -32,13 +34,14 @@ final readonly class ActionPayload implements ActionPayloadInterface
      * Builds a successful payload with the given data.
      *
      * @param mixed $data       The response data to include in the payload.
+     * @param mixed $meta       Optional metadata to include alongside the data.
      * @param int   $statusCode The HTTP status code, defaults to 200.
      *
      * @return self A new success payload instance.
      */
-    public static function success(mixed $data, int $statusCode = 200): self
+    public static function success(mixed $data, mixed $meta = null, int $statusCode = 200): self
     {
-        return new self($data, $statusCode);
+        return new self($data, $statusCode, null, $meta);
     }
 
     /**
@@ -69,7 +72,7 @@ final readonly class ActionPayload implements ActionPayloadInterface
     /**
      * Reduces the payload to an array suitable for JSON serialization.
      *
-     * @return array{data?:mixed,error?:ActionErrorInterface} The serialized payload fields.
+     * @return array{data?:mixed,error?:ActionErrorInterface,meta?:mixed} The serialized payload fields.
      */
     public function jsonSerialize(): array
     {
@@ -81,6 +84,10 @@ final readonly class ActionPayload implements ActionPayloadInterface
 
         if ($this->error !== null) {
             $payload['error'] = $this->error;
+        }
+
+        if ($this->meta !== null) {
+            $payload['meta'] = $this->meta;
         }
 
         return $payload;
