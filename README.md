@@ -295,19 +295,19 @@ final class ListProductsAction extends AbstractAction
         $category = $this->resolveQueryParam('category');
 
         // Optional parameters with defaults
-        $page = $this->resolveQueryParam('page', 1);
-        $limit = $this->resolveQueryParam('limit', 20);
+        $page = max(1, (int) $this->resolveQueryParam('page', 1));
+        $limit = max(1, (int) $this->resolveQueryParam('limit', 20));
 
         // Your domain logic here...
-        $products = $this->fetchProducts($category, (int) $page, (int) $limit);
+        $products = $this->fetchProducts($category, $page, $limit);
         $total = $this->countProducts($category);
 
         return $this->ok(
             $products,
             [
                 'total' => $total,
-                'page' => (int) $page,
-                'perPage' => (int) $limit,
+                'page' => $page,
+                'perPage' => $limit,
                 'totalPages' => (int) ceil($total / $limit),
             ]
         );
