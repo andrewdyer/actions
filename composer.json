@@ -4,6 +4,18 @@
   "keywords": ["php", "framework-agnostic", "actions", "api", "json-api", "psr-7"],
   "type": "library",
   "license": "MIT",
+  "authors": [
+    {
+      "name": "Andrew Dyer",
+      "homepage": "https://andrewdyer.rocks",
+      "role": "Developer"
+    }
+  ],
+  "homepage": "https://github.com/andrewdyer/settings",
+  "support": {
+    "issues": "https://github.com/andrewdyer/settings/issues",
+    "source": "https://github.com/andrewdyer/settings"
+  },
   "autoload": {
     "psr-4": {
       "AndrewDyer\\Actions\\": "src/"
