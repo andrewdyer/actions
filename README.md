@@ -1,6 +1,6 @@
 # Actions
 
-A framework-agnostic PHP library for building structured and predictable JSON API endpoints with standardised request and response handling.
+A framework-agnostic library for building structured and predictable JSON responses with standardised response handling.
 
 [![Latest Stable Version](http://poser.pugx.org/andrewdyer/actions/v?style=flat-square)](https://packagist.org/packages/andrewdyer/actions)
 [![Total Downloads](http://poser.pugx.org/andrewdyer/actions/downloads?style=flat-square)](https://packagist.org/packages/andrewdyer/actions)
@@ -9,7 +9,7 @@ A framework-agnostic PHP library for building structured and predictable JSON AP
 
 ## Introduction
 
-This library adheres to standard HTTP messaging principles (PSR-compliant) and provides a small set of utilities to standardise how actions handle requests and generate responses. By establishing clear patterns for success responses and error payloads, it helps keep action classes focused on domain logic while giving clients predictable, well-structured JSON responses, regardless of the framework or HTTP layer used.
+This library offers a small set of utilities that standardise how actions handle requests and generate structured JSON responses, establishing clear patterns for success responses and error payloads. By keeping action classes focused on domain logic and giving clients well-structured, predictable JSON responses, it simplifies API development regardless of the framework or HTTP layer in use.
 
 ## Prerequisites
 
