@@ -58,6 +58,10 @@ return $config->setRules([
     'no_whitespace_in_blank_line' => true,
     'normalize_index_brace' => true,
     'object_operator_without_whitespace' => true,
+    'ordered_class_elements' => [
+        'order' => ['property', 'method'],
+        'sort_algorithm' => 'alpha',
+    ],
     'ordered_imports' => ['sort_algorithm' => 'alpha'],
     'phpdoc_align' => ['align' => 'vertical'],
     'phpdoc_indent' => true,
