@@ -222,4 +222,33 @@ abstract class AbstractAction
     {
         return $this->json($payload);
     }
+
+    /**
+     * Returns a request attribute.
+     *
+     * @param string $name    The attribute name.
+     * @param mixed  $default The value returned when the attribute is absent.
+     *
+     * @return mixed The attribute value or the supplied default.
+     */
+    protected function getAttribute(string $name, mixed $default = null): mixed
+    {
+        return $this->request->getAttribute($name, $default);
+    }
+
+    /**
+     * Resolves a required request attribute.
+     *
+     * @throws RuntimeException When the attribute is absent.
+     */
+    protected function resolveAttribute(string $name): mixed
+    {
+        $attributes = $this->request->getAttributes();
+
+        if (!array_key_exists($name, $attributes)) {
+            throw new RuntimeException("Missing request attribute: {$name}");
+        }
+
+        return $attributes[$name];
+    }
 }

@@ -757,4 +757,144 @@ final class AbstractActionTest extends TestCase
 
         $action($this->makeRequest('GET', '/items'), $this->makeResponse(), []);
     }
+
+    /**
+     * Asserts that getAttribute returns an existing request attribute.
+     */
+    public function testGetAttributeReturnsAttribute(): void
+    {
+        $request = $this->makeRequest('GET', '/protected')
+            ->withAttribute('user', 'authenticated-user');
+
+        $action = new class () extends AbstractAction {
+            protected function handle(): ResponseInterface
+            {
+                return $this->json(ActionPayload::success([
+                    'user' => $this->getAttribute('user'),
+                ]));
+            }
+        };
+
+        $result = $action($request, $this->makeResponse(), []);
+        $decoded = json_decode(
+            (string)$result->getBody(),
+            true,
+            512,
+            JSON_THROW_ON_ERROR
+        );
+
+        self::assertSame('authenticated-user', $decoded['data']['user']);
+    }
+
+    /**
+     * Asserts that getAttribute returns the supplied default when the attribute is absent.
+     */
+    public function testGetAttributeReturnsDefaultWhenMissing(): void
+    {
+        $action = new class () extends AbstractAction {
+            protected function handle(): ResponseInterface
+            {
+                return $this->json(ActionPayload::success([
+                    'locale' => $this->getAttribute('locale', 'en'),
+                ]));
+            }
+        };
+
+        $result = $action(
+            $this->makeRequest('GET', '/'),
+            $this->makeResponse(),
+            []
+        );
+
+        $decoded = json_decode(
+            (string)$result->getBody(),
+            true,
+            512,
+            JSON_THROW_ON_ERROR
+        );
+
+        self::assertSame('en', $decoded['data']['locale']);
+    }
+
+    /**
+     * Asserts that resolveAttribute returns an existing required request attribute.
+     */
+    public function testResolveAttributeReturnsAttribute(): void
+    {
+        $request = $this->makeRequest('GET', '/protected')
+            ->withAttribute('user', 'authenticated-user');
+
+        $action = new class () extends AbstractAction {
+            protected function handle(): ResponseInterface
+            {
+                return $this->json(ActionPayload::success([
+                    'user' => $this->resolveAttribute('user'),
+                ]));
+            }
+        };
+
+        $result = $action($request, $this->makeResponse(), []);
+        $decoded = json_decode(
+            (string)$result->getBody(),
+            true,
+            512,
+            JSON_THROW_ON_ERROR
+        );
+
+        self::assertSame('authenticated-user', $decoded['data']['user']);
+    }
+
+    /**
+     * Asserts that resolveAttribute distinguishes an existing null value from a missing attribute.
+     */
+    public function testResolveAttributeReturnsExistingNullAttribute(): void
+    {
+        $request = $this->makeRequest('GET', '/')
+            ->withAttribute('tenant', null);
+
+        $action = new class () extends AbstractAction {
+            protected function handle(): ResponseInterface
+            {
+                return $this->json(ActionPayload::success([
+                    'tenant' => $this->resolveAttribute('tenant'),
+                ]));
+            }
+        };
+
+        $result = $action($request, $this->makeResponse(), []);
+
+        $decoded = json_decode(
+            (string)$result->getBody(),
+            true,
+            512,
+            JSON_THROW_ON_ERROR
+        );
+
+        self::assertArrayHasKey('tenant', $decoded['data']);
+        self::assertNull($decoded['data']['tenant']);
+    }
+
+    /**
+     * Asserts that resolveAttribute throws when the required request attribute is absent.
+     */
+    public function testResolveAttributeThrowsWhenMissing(): void
+    {
+        $action = new class () extends AbstractAction {
+            protected function handle(): ResponseInterface
+            {
+                $this->resolveAttribute('user');
+
+                return $this->json(ActionPayload::success([]));
+            }
+        };
+
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('Missing request attribute: user');
+
+        $action(
+            $this->makeRequest('GET', '/protected'),
+            $this->makeResponse(),
+            []
+        );
+    }
 }
