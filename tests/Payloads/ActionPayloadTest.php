@@ -16,6 +16,40 @@ use PHPUnit\Framework\TestCase;
 final class ActionPayloadTest extends TestCase
 {
     /**
+     * Ensures error payloads expose status codes and embedded errors.
+     *
+     * @return void
+     */
+    public function testErrorPayload(): void
+    {
+        $error = ActionError::serverError('Boom');
+        $payload = ActionPayload::error($error, 500);
+
+        self::assertSame(500, $payload->getStatusCode());
+        self::assertSame(['error' => $error], $payload->jsonSerialize());
+    }
+
+    /**
+     * Verifies meta preserves falsy values during serialization.
+     *
+     * @return void
+     */
+    public function testMetaPreservesFalsyValues(): void
+    {
+        $meta = [
+            'hasMore' => false,
+            'offset' => 0,
+            'query' => '',
+        ];
+
+        $payload = ActionPayload::success(['items' => []], $meta, 200);
+
+        $serialized = $payload->jsonSerialize();
+
+        self::assertSame($meta, $serialized['meta']);
+    }
+
+    /**
      * Confirms success payloads carry provided data and status codes.
      *
      * @return void
@@ -50,38 +84,6 @@ final class ActionPayloadTest extends TestCase
                 ],
             ],
             $payload->jsonSerialize()
-        );
-    }
-
-    /**
-     * Ensures error payloads expose status codes and embedded errors.
-     *
-     * @return void
-     */
-    public function testErrorPayload(): void
-    {
-        $error = ActionError::serverError('Boom');
-        $payload = ActionPayload::error($error, 500);
-
-        self::assertSame(500, $payload->getStatusCode());
-        self::assertSame(['error' => $error], $payload->jsonSerialize());
-    }
-
-    /**
-     * Checks that toJson produces valid JSON matching the schema.
-     *
-     * @return void
-     */
-    public function testToJsonProducesValidJson(): void
-    {
-        $payload = ActionPayload::success(['ok' => true]);
-
-        $json = $payload->toJson();
-
-        self::assertJson($json);
-        self::assertSame(
-            ['data' => ['ok' => true]],
-            json_decode($json, true)
         );
     }
 
@@ -131,23 +133,21 @@ final class ActionPayloadTest extends TestCase
     }
 
     /**
-     * Verifies meta preserves falsy values during serialization.
+     * Checks that toJson produces valid JSON matching the schema.
      *
      * @return void
      */
-    public function testMetaPreservesFalsyValues(): void
+    public function testToJsonProducesValidJson(): void
     {
-        $meta = [
-            'hasMore' => false,
-            'offset' => 0,
-            'query' => '',
-        ];
+        $payload = ActionPayload::success(['ok' => true]);
 
-        $payload = ActionPayload::success(['items' => []], $meta, 200);
+        $json = $payload->toJson();
 
-        $serialized = $payload->jsonSerialize();
-
-        self::assertSame($meta, $serialized['meta']);
+        self::assertJson($json);
+        self::assertSame(
+            ['data' => ['ok' => true]],
+            json_decode($json, true)
+        );
     }
 
     /**

@@ -22,8 +22,6 @@ use RuntimeException;
  */
 abstract class AbstractAction
 {
-    use RespondsWithJson;
-
     /**
      * Route arguments resolved from the matched URL pattern.
      */
@@ -73,11 +71,27 @@ abstract class AbstractAction
     }
 
     /**
-     * Runs the domain-specific action logic.
+     * Returns the route arguments from the matched URL pattern.
      *
-     * @return ResponseInterface The response produced by the action.
+     * @return array<string, string|int> The route arguments as key-value pairs.
      */
-    abstract protected function handle(): ResponseInterface;
+    protected function getArgs(): array
+    {
+        return $this->args;
+    }
+
+    /**
+     * Returns a request attribute.
+     *
+     * @param string $name    The attribute name.
+     * @param mixed  $default The value returned when the attribute is absent.
+     *
+     * @return mixed The attribute value or the supplied default.
+     */
+    protected function getAttribute(string $name, mixed $default = null): mixed
+    {
+        return $this->request->getAttribute($name, $default);
+    }
 
     /**
      * Extracts the exception message, returning null for empty strings.
@@ -124,14 +138,11 @@ abstract class AbstractAction
     }
 
     /**
-     * Returns the route arguments from the matched URL pattern.
+     * Runs the domain-specific action logic.
      *
-     * @return array<string, string|int> The route arguments as key-value pairs.
+     * @return ResponseInterface The response produced by the action.
      */
-    protected function getArgs(): array
-    {
-        return $this->args;
-    }
+    abstract protected function handle(): ResponseInterface;
 
     /**
      * Resolves a required route argument by name.
@@ -149,6 +160,22 @@ abstract class AbstractAction
         }
 
         return $this->args[$name];
+    }
+
+    /**
+     * Resolves a required request attribute.
+     *
+     * @throws RuntimeException When the attribute is absent.
+     */
+    protected function resolveAttribute(string $name): mixed
+    {
+        $attributes = $this->request->getAttributes();
+
+        if (!array_key_exists($name, $attributes)) {
+            throw new RuntimeException("Missing request attribute: {$name}");
+        }
+
+        return $attributes[$name];
     }
 
     /**
@@ -222,33 +249,5 @@ abstract class AbstractAction
     {
         return $this->json($payload);
     }
-
-    /**
-     * Returns a request attribute.
-     *
-     * @param string $name    The attribute name.
-     * @param mixed  $default The value returned when the attribute is absent.
-     *
-     * @return mixed The attribute value or the supplied default.
-     */
-    protected function getAttribute(string $name, mixed $default = null): mixed
-    {
-        return $this->request->getAttribute($name, $default);
-    }
-
-    /**
-     * Resolves a required request attribute.
-     *
-     * @throws RuntimeException When the attribute is absent.
-     */
-    protected function resolveAttribute(string $name): mixed
-    {
-        $attributes = $this->request->getAttributes();
-
-        if (!array_key_exists($name, $attributes)) {
-            throw new RuntimeException("Missing request attribute: {$name}");
-        }
-
-        return $attributes[$name];
-    }
+    use RespondsWithJson;
 }

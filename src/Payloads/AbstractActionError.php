@@ -26,16 +26,6 @@ abstract readonly class AbstractActionError implements ActionErrorInterface
     }
 
     /**
-     * Returns the machine-readable error identifier.
-     *
-     * @return string The error type string.
-     */
-    public function getType(): string
-    {
-        return $this->type;
-    }
-
-    /**
      * Returns the human-readable error detail.
      *
      * @return string|null The error description, or null if none was provided.
@@ -43,6 +33,16 @@ abstract readonly class AbstractActionError implements ActionErrorInterface
     public function getDescription(): ?string
     {
         return $this->description;
+    }
+
+    /**
+     * Returns the machine-readable error identifier.
+     *
+     * @return string The error type string.
+     */
+    public function getType(): string
+    {
+        return $this->type;
     }
 
     /**

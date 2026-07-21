@@ -21,6 +21,34 @@ use Psr\Http\Message\ResponseInterface;
 trait RespondsWithJson
 {
     /**
+     * Responds with a 400 Bad Request JSON error payload.
+     *
+     * @param string|null $description An optional human-readable description of the error.
+     *
+     * @throws JsonException When the payload cannot be JSON-encoded.
+     *
+     * @return ResponseInterface The JSON response.
+     */
+    protected function badRequest(?string $description = null): ResponseInterface
+    {
+        return $this->json(ActionPayload::error(ActionError::badRequest($description), 400));
+    }
+
+    /**
+     * Responds with a 403 Forbidden JSON error payload.
+     *
+     * @param string|null $description An optional human-readable description of the error.
+     *
+     * @throws JsonException When the payload cannot be JSON-encoded.
+     *
+     * @return ResponseInterface The JSON response.
+     */
+    protected function forbidden(?string $description = null): ResponseInterface
+    {
+        return $this->json(ActionPayload::error(ActionError::insufficientPrivileges($description), 403));
+    }
+
+    /**
      * Serializes a payload to JSON and writes it to the response body.
      *
      * @param ActionPayloadInterface $payload The payload to serialize and send.
@@ -38,64 +66,6 @@ trait RespondsWithJson
         return $this->response
             ->withHeader('Content-Type', 'application/json; charset=utf-8')
             ->withStatus($payload->getStatusCode());
-    }
-
-    /**
-     * Responds with a 200 OK JSON payload containing the given data.
-     *
-     * @param mixed $data       The response data to include in the payload.
-     * @param mixed $meta       Optional metadata to include alongside the data.
-     * @param int   $statusCode The HTTP status code, defaults to 200.
-     *
-     * @throws JsonException When the payload cannot be JSON-encoded.
-     *
-     * @return ResponseInterface The JSON response.
-     */
-    protected function ok(mixed $data, mixed $meta = null, int $statusCode = 200): ResponseInterface
-    {
-        return $this->json(ActionPayload::success($data, $meta, $statusCode));
-    }
-
-    /**
-     * Responds with a 400 Bad Request JSON error payload.
-     *
-     * @param string|null $description An optional human-readable description of the error.
-     *
-     * @throws JsonException When the payload cannot be JSON-encoded.
-     *
-     * @return ResponseInterface The JSON response.
-     */
-    protected function badRequest(?string $description = null): ResponseInterface
-    {
-        return $this->json(ActionPayload::error(ActionError::badRequest($description), 400));
-    }
-
-    /**
-     * Responds with a 401 Unauthorized JSON error payload.
-     *
-     * @param string|null $description An optional human-readable description of the error.
-     *
-     * @throws JsonException When the payload cannot be JSON-encoded.
-     *
-     * @return ResponseInterface The JSON response.
-     */
-    protected function unauthorized(?string $description = null): ResponseInterface
-    {
-        return $this->json(ActionPayload::error(ActionError::unauthenticated($description), 401));
-    }
-
-    /**
-     * Responds with a 403 Forbidden JSON error payload.
-     *
-     * @param string|null $description An optional human-readable description of the error.
-     *
-     * @throws JsonException When the payload cannot be JSON-encoded.
-     *
-     * @return ResponseInterface The JSON response.
-     */
-    protected function forbidden(?string $description = null): ResponseInterface
-    {
-        return $this->json(ActionPayload::error(ActionError::insufficientPrivileges($description), 403));
     }
 
     /**
@@ -141,6 +111,22 @@ trait RespondsWithJson
     }
 
     /**
+     * Responds with a 200 OK JSON payload containing the given data.
+     *
+     * @param mixed $data       The response data to include in the payload.
+     * @param mixed $meta       Optional metadata to include alongside the data.
+     * @param int   $statusCode The HTTP status code, defaults to 200.
+     *
+     * @throws JsonException When the payload cannot be JSON-encoded.
+     *
+     * @return ResponseInterface The JSON response.
+     */
+    protected function ok(mixed $data, mixed $meta = null, int $statusCode = 200): ResponseInterface
+    {
+        return $this->json(ActionPayload::success($data, $meta, $statusCode));
+    }
+
+    /**
      * Responds with a 500 Internal Server Error JSON error payload.
      *
      * @param string|null $description An optional human-readable description of the error.
@@ -152,5 +138,19 @@ trait RespondsWithJson
     protected function serverError(?string $description = null): ResponseInterface
     {
         return $this->json(ActionPayload::error(ActionError::serverError($description), 500));
+    }
+
+    /**
+     * Responds with a 401 Unauthorized JSON error payload.
+     *
+     * @param string|null $description An optional human-readable description of the error.
+     *
+     * @throws JsonException When the payload cannot be JSON-encoded.
+     *
+     * @return ResponseInterface The JSON response.
+     */
+    protected function unauthorized(?string $description = null): ResponseInterface
+    {
+        return $this->json(ActionPayload::error(ActionError::unauthenticated($description), 401));
     }
 }

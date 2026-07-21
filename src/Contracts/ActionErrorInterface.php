@@ -14,16 +14,16 @@ use JsonSerializable;
 interface ActionErrorInterface extends JsonSerializable
 {
     /**
-     * Returns the machine-readable error identifier.
-     *
-     * @return string The error type string.
-     */
-    public function getType(): string;
-
-    /**
      * Returns the optional human-readable error detail.
      *
      * @return string|null The error description, or null if none was provided.
      */
     public function getDescription(): ?string;
+
+    /**
+     * Returns the machine-readable error identifier.
+     *
+     * @return string The error type string.
+     */
+    public function getType(): string;
 }
