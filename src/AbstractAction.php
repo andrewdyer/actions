@@ -7,6 +7,7 @@ namespace AndrewDyer\Actions;
 use AndrewDyer\Actions\Concerns\RespondsWithJson;
 use AndrewDyer\Actions\Contracts\ActionPayloadInterface;
 use AndrewDyer\Actions\Contracts\BadRequestExceptionInterface;
+use AndrewDyer\Actions\Contracts\ConflictExceptionInterface;
 use AndrewDyer\Actions\Contracts\ForbiddenExceptionInterface;
 use AndrewDyer\Actions\Contracts\NotFoundExceptionInterface;
 use AndrewDyer\Actions\Contracts\NotImplementedExceptionInterface;
@@ -59,6 +60,8 @@ abstract class AbstractAction
             return $this->handle();
         } catch (BadRequestExceptionInterface $e) {
             return $this->badRequest($this->getExceptionMessage($e));
+        } catch (ConflictExceptionInterface $e) {
+            return $this->conflict($this->getExceptionMessage($e));
         } catch (ForbiddenExceptionInterface $e) {
             return $this->forbidden($this->getExceptionMessage($e));
         } catch (NotFoundExceptionInterface $e) {

@@ -112,6 +112,47 @@ final class RespondsWithJsonTest extends TestCase
     }
 
     /**
+     * Asserts that conflict method accepts a null description.
+     */
+    public function testConflictAcceptsNullDescription(): void
+    {
+        $action = new class () extends AbstractAction {
+            protected function handle(): ResponseInterface
+            {
+                return $this->conflict();
+            }
+        };
+
+        $response = $this->dispatch($action);
+
+        self::assertSame(409, $response->getStatusCode());
+
+        $body = $this->decodeBody($response);
+        self::assertArrayNotHasKey('description', $body['error']);
+    }
+
+    /**
+     * Asserts that conflict method returns 409 with a RESOURCE_CONFLICT error type.
+     */
+    public function testConflictReturns409(): void
+    {
+        $action = new class () extends AbstractAction {
+            protected function handle(): ResponseInterface
+            {
+                return $this->conflict('Resource already exists.');
+            }
+        };
+
+        $response = $this->dispatch($action);
+
+        self::assertSame(409, $response->getStatusCode());
+
+        $body = $this->decodeBody($response);
+        self::assertSame(ActionError::RESOURCE_CONFLICT, $body['error']['type']);
+        self::assertSame('Resource already exists.', $body['error']['description']);
+    }
+
+    /**
      * Asserts that forbidden method accepts a null description.
      */
     public function testForbiddenAcceptsNullDescription(): void
@@ -390,6 +431,47 @@ final class RespondsWithJsonTest extends TestCase
 
         $body = $this->decodeBody($response);
         self::assertSame(ActionError::SERVER_ERROR, $body['error']['type']);
+    }
+
+    /**
+     * Asserts that tooManyRequests method accepts a null description.
+     */
+    public function testTooManyRequestsAcceptsNullDescription(): void
+    {
+        $action = new class () extends AbstractAction {
+            protected function handle(): ResponseInterface
+            {
+                return $this->tooManyRequests();
+            }
+        };
+
+        $response = $this->dispatch($action);
+
+        self::assertSame(429, $response->getStatusCode());
+
+        $body = $this->decodeBody($response);
+        self::assertArrayNotHasKey('description', $body['error']);
+    }
+
+    /**
+     * Asserts that tooManyRequests method returns 429 with a TOO_MANY_REQUESTS error type.
+     */
+    public function testTooManyRequestsReturns429(): void
+    {
+        $action = new class () extends AbstractAction {
+            protected function handle(): ResponseInterface
+            {
+                return $this->tooManyRequests('Rate limit exceeded.');
+            }
+        };
+
+        $response = $this->dispatch($action);
+
+        self::assertSame(429, $response->getStatusCode());
+
+        $body = $this->decodeBody($response);
+        self::assertSame(ActionError::TOO_MANY_REQUESTS, $body['error']['type']);
+        self::assertSame('Rate limit exceeded.', $body['error']['description']);
     }
 
     /**

@@ -35,6 +35,20 @@ trait RespondsWithJson
     }
 
     /**
+     * Responds with a 409 Conflict JSON error payload.
+     *
+     * @param string|null $description An optional human-readable description of the error.
+     *
+     * @throws JsonException When the payload cannot be JSON-encoded.
+     *
+     * @return ResponseInterface The JSON response.
+     */
+    protected function conflict(?string $description = null): ResponseInterface
+    {
+        return $this->json(ActionPayload::error(ActionError::conflict($description), 409));
+    }
+
+    /**
      * Responds with a 403 Forbidden JSON error payload.
      *
      * @param string|null $description An optional human-readable description of the error.
@@ -138,6 +152,20 @@ trait RespondsWithJson
     protected function serverError(?string $description = null): ResponseInterface
     {
         return $this->json(ActionPayload::error(ActionError::serverError($description), 500));
+    }
+
+    /**
+     * Responds with a 429 Too Many Requests JSON error payload.
+     *
+     * @param string|null $description An optional human-readable description of the error.
+     *
+     * @throws JsonException When the payload cannot be JSON-encoded.
+     *
+     * @return ResponseInterface The JSON response.
+     */
+    protected function tooManyRequests(?string $description = null): ResponseInterface
+    {
+        return $this->json(ActionPayload::error(ActionError::tooManyRequests($description), 429));
     }
 
     /**

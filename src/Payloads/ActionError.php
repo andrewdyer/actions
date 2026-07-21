@@ -24,6 +24,18 @@ final readonly class ActionError extends AbstractActionError
     }
 
     /**
+     * Creates a resource conflict error representation.
+     *
+     * @param string|null $description An optional human-readable description of the error.
+     *
+     * @return self A new instance representing a resource conflict.
+     */
+    public static function conflict(?string $description = null): self
+    {
+        return new self(self::RESOURCE_CONFLICT, $description);
+    }
+
+    /**
      * Creates an insufficient privileges error representation.
      *
      * @param string|null $description An optional human-readable description of the error.
@@ -84,6 +96,18 @@ final readonly class ActionError extends AbstractActionError
     }
 
     /**
+     * Creates a too many requests error representation.
+     *
+     * @param string|null $description An optional human-readable description of the error.
+     *
+     * @return self A new instance representing a rate limit error.
+     */
+    public static function tooManyRequests(?string $description = null): self
+    {
+        return new self(self::TOO_MANY_REQUESTS, $description);
+    }
+
+    /**
      * Creates an unauthenticated error representation.
      *
      * @param string|null $description An optional human-readable description of the error.
@@ -106,11 +130,17 @@ final readonly class ActionError extends AbstractActionError
     /** Indicates the requested functionality has not yet been implemented. */
     public const string NOT_IMPLEMENTED = 'NOT_IMPLEMENTED';
 
+    /** Indicates a conflict with the current state of a resource. */
+    public const string RESOURCE_CONFLICT = 'RESOURCE_CONFLICT';
+
     /** Indicates the requested resource could not be found. */
     public const string RESOURCE_NOT_FOUND = 'RESOURCE_NOT_FOUND';
 
     /** Indicates an unexpected internal server failure. */
     public const string SERVER_ERROR = 'SERVER_ERROR';
+
+    /** Indicates the caller has exceeded the permitted request rate. */
+    public const string TOO_MANY_REQUESTS = 'TOO_MANY_REQUESTS';
 
     /** Indicates the request lacks valid authentication credentials. */
     public const string UNAUTHENTICATED = 'UNAUTHENTICATED';

@@ -6,6 +6,7 @@ namespace AndrewDyer\Actions\Tests;
 
 use AndrewDyer\Actions\AbstractAction;
 use AndrewDyer\Actions\Exceptions\BadRequestException;
+use AndrewDyer\Actions\Exceptions\ConflictException;
 use AndrewDyer\Actions\Exceptions\ForbiddenException;
 use AndrewDyer\Actions\Exceptions\NotFoundException;
 use AndrewDyer\Actions\Exceptions\NotImplementedException;
@@ -58,6 +59,27 @@ final class AbstractActionTest extends TestCase
         self::assertArrayNotHasKey('data', $decoded);
         self::assertSame(ActionError::BAD_REQUEST, $decoded['error']['type'] ?? null);
         self::assertSame('Invalid email format', $decoded['error']['description'] ?? null);
+    }
+
+    /**
+     * Asserts that ConflictException is caught and returns a 409 JSON response.
+     */
+    public function testCatchesConflictException(): void
+    {
+        $action = new class () extends AbstractAction {
+            protected function handle(): ResponseInterface
+            {
+                throw new ConflictException('Resource already exists');
+            }
+        };
+
+        $result = $action($this->makeRequest('POST', '/things'), $this->makeResponse(), []);
+
+        self::assertSame(409, $result->getStatusCode());
+
+        $decoded = json_decode((string)$result->getBody(), true, 512, JSON_THROW_ON_ERROR);
+        self::assertSame(ActionError::RESOURCE_CONFLICT, $decoded['error']['type']);
+        self::assertSame('Resource already exists', $decoded['error']['description']);
     }
 
     /**
