@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace AndrewDyer\Actions\Tests\Payloads;
 
 use AndrewDyer\Actions\Payloads\ActionError;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -22,6 +23,7 @@ final class ActionErrorTest extends TestCase
     public static function factoryProvider(): iterable
     {
         yield 'bad request with description' => ['badRequest', ActionError::BAD_REQUEST, 'Invalid input'];
+        yield 'conflict' => ['conflict', ActionError::RESOURCE_CONFLICT, 'Resource already exists'];
         yield 'not found default description' => ['notFound', ActionError::RESOURCE_NOT_FOUND, null];
         yield 'not allowed' => ['notAllowed', ActionError::NOT_ALLOWED, 'Method not allowed'];
         yield 'unauthenticated' => ['unauthenticated', ActionError::UNAUTHENTICATED, 'Missing token'];
@@ -33,14 +35,13 @@ final class ActionErrorTest extends TestCase
     /**
      * Ensures each factory emits the expected error metadata.
      *
-     * @dataProvider factoryProvider
-     *
      * @param string      $factoryMethod
      * @param string      $expectedType
      * @param string|null $description
      *
      * @return void
      */
+    #[DataProvider('factoryProvider')]
     public function testFactoryOutputs(string $factoryMethod, string $expectedType, ?string $description): void
     {
         $error = ActionError::$factoryMethod($description);
