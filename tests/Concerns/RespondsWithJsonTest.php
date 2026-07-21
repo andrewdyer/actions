@@ -434,6 +434,47 @@ final class RespondsWithJsonTest extends TestCase
     }
 
     /**
+     * Asserts that tooManyRequests method accepts a null description.
+     */
+    public function testTooManyRequestsAcceptsNullDescription(): void
+    {
+        $action = new class () extends AbstractAction {
+            protected function handle(): ResponseInterface
+            {
+                return $this->tooManyRequests();
+            }
+        };
+
+        $response = $this->dispatch($action);
+
+        self::assertSame(429, $response->getStatusCode());
+
+        $body = $this->decodeBody($response);
+        self::assertArrayNotHasKey('description', $body['error']);
+    }
+
+    /**
+     * Asserts that tooManyRequests method returns 429 with a TOO_MANY_REQUESTS error type.
+     */
+    public function testTooManyRequestsReturns429(): void
+    {
+        $action = new class () extends AbstractAction {
+            protected function handle(): ResponseInterface
+            {
+                return $this->tooManyRequests('Rate limit exceeded.');
+            }
+        };
+
+        $response = $this->dispatch($action);
+
+        self::assertSame(429, $response->getStatusCode());
+
+        $body = $this->decodeBody($response);
+        self::assertSame(ActionError::TOO_MANY_REQUESTS, $body['error']['type']);
+        self::assertSame('Rate limit exceeded.', $body['error']['description']);
+    }
+
+    /**
      * Asserts that unauthorized method accepts a null description.
      */
     public function testUnauthorizedAcceptsNullDescription(): void

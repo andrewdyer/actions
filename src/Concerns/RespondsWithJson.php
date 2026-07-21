@@ -155,6 +155,20 @@ trait RespondsWithJson
     }
 
     /**
+     * Responds with a 429 Too Many Requests JSON error payload.
+     *
+     * @param string|null $description An optional human-readable description of the error.
+     *
+     * @throws JsonException When the payload cannot be JSON-encoded.
+     *
+     * @return ResponseInterface The JSON response.
+     */
+    protected function tooManyRequests(?string $description = null): ResponseInterface
+    {
+        return $this->json(ActionPayload::error(ActionError::tooManyRequests($description), 429));
+    }
+
+    /**
      * Responds with a 401 Unauthorized JSON error payload.
      *
      * @param string|null $description An optional human-readable description of the error.

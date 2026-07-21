@@ -96,6 +96,18 @@ final readonly class ActionError extends AbstractActionError
     }
 
     /**
+     * Creates a too many requests error representation.
+     *
+     * @param string|null $description An optional human-readable description of the error.
+     *
+     * @return self A new instance representing a rate limit error.
+     */
+    public static function tooManyRequests(?string $description = null): self
+    {
+        return new self(self::TOO_MANY_REQUESTS, $description);
+    }
+
+    /**
      * Creates an unauthenticated error representation.
      *
      * @param string|null $description An optional human-readable description of the error.
@@ -126,6 +138,9 @@ final readonly class ActionError extends AbstractActionError
 
     /** Indicates an unexpected internal server failure. */
     public const string SERVER_ERROR = 'SERVER_ERROR';
+
+    /** Indicates the caller has exceeded the permitted request rate. */
+    public const string TOO_MANY_REQUESTS = 'TOO_MANY_REQUESTS';
 
     /** Indicates the request lacks valid authentication credentials. */
     public const string UNAUTHENTICATED = 'UNAUTHENTICATED';

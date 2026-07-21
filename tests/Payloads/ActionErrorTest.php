@@ -30,6 +30,7 @@ final class ActionErrorTest extends TestCase
         yield 'insufficient privileges' => ['insufficientPrivileges', ActionError::INSUFFICIENT_PRIVILEGES, 'Need admin role'];
         yield 'not implemented' => ['notImplemented', ActionError::NOT_IMPLEMENTED, 'Coming soon'];
         yield 'server error' => ['serverError', ActionError::SERVER_ERROR, 'Unexpected failure'];
+        yield 'too many requests' => ['tooManyRequests', ActionError::TOO_MANY_REQUESTS, 'Rate limit exceeded'];
     }
 
     /**
