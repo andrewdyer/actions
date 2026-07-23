@@ -153,6 +153,49 @@ final class RespondsWithJsonTest extends TestCase
     }
 
     /**
+     * Asserts that document applies a custom status and response headers.
+     */
+    public function testDocumentAppliesCustomStatusAndHeaders(): void
+    {
+        $action = new class () extends AbstractAction {
+            protected function handle(): ResponseInterface
+            {
+                return $this->document(
+                    ['active' => false],
+                    202,
+                    ['Cache-Control' => 'no-store', 'X-Test' => ['one', 'two']],
+                );
+            }
+        };
+
+        $response = $this->dispatch($action);
+
+        self::assertSame(202, $response->getStatusCode());
+        self::assertSame('no-store', $response->getHeaderLine('Cache-Control'));
+        self::assertSame(['one', 'two'], $response->getHeader('X-Test'));
+        self::assertSame(['active' => false], $this->decodeBody($response));
+    }
+
+    /**
+     * Asserts that document returns data without an action-payload envelope.
+     */
+    public function testDocumentReturnsAnUnwrappedJsonDocument(): void
+    {
+        $action = new class () extends AbstractAction {
+            protected function handle(): ResponseInterface
+            {
+                return $this->document(['keys' => [['kid' => 'identity-key']]]);
+            }
+        };
+
+        $response = $this->dispatch($action);
+
+        self::assertSame(200, $response->getStatusCode());
+        self::assertSame('application/json; charset=utf-8', $response->getHeaderLine('Content-Type'));
+        self::assertSame(['keys' => [['kid' => 'identity-key']]], $this->decodeBody($response));
+    }
+
+    /**
      * Asserts that forbidden method accepts a null description.
      */
     public function testForbiddenAcceptsNullDescription(): void
