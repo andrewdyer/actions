@@ -144,22 +144,35 @@ Accept: application/json
 
 ## Response helpers
 
-Helper methods provided by `AbstractAction` generate structured JSON responses. Each builds the appropriate `ActionPayload` and writes it to the response.
+Helper methods provided by `AbstractAction` generate JSON responses. Most build
+an `ActionPayload` envelope; `document()` preserves a standards-defined
+top-level JSON structure.
 
-| Method                                                       | When to use                                      | Status          | Error type                |
-| ------------------------------------------------------------ | ------------------------------------------------ | --------------- | ------------------------- |
-| `ok(mixed $data, mixed $meta = null, int $statusCode = 200)` | Successful operation with data payload           | 200 (or custom) | —                         |
-| `badRequest(?string $description = null)`                    | Request is malformed or violates business rules  | 400             | `BAD_REQUEST`             |
-| `unauthorized(?string $description = null)`                  | Request lacks valid authentication credentials   | 401             | `UNAUTHENTICATED`         |
-| `forbidden(?string $description = null)`                     | Authenticated caller lacks required permissions  | 403             | `INSUFFICIENT_PRIVILEGES` |
-| `notFound(?string $description = null)`                      | Requested resource does not exist                | 404             | `RESOURCE_NOT_FOUND`      |
-| `notAllowed(?string $description = null)`                    | HTTP method not allowed for the resource         | 405             | `NOT_ALLOWED`             |
-| `serverError(?string $description = null)`                   | Unexpected server error occurred                 | 500             | `SERVER_ERROR`            |
-| `notImplemented(?string $description = null)`                | Requested functionality has not been implemented | 501             | `NOT_IMPLEMENTED`         |
+| Method                                                                                      | When to use                                           | Status          | Error type                |
+| ------------------------------------------------------------------------------------------- | ----------------------------------------------------- | --------------- | ------------------------- |
+| `ok(mixed $data, mixed $meta = null, int $statusCode = 200)`                                | Successful operation with data payload                | 200 (or custom) | —                         |
+| `document(mixed $data, int $statusCode = 200, array $headers = [])`                          | Unwrapped standards-defined JSON document             | 200 (or custom) | —                         |
+| `badRequest(?string $description = null)`                                                   | Request is malformed or violates business rules       | 400             | `BAD_REQUEST`             |
+| `unauthorized(?string $description = null)`                                                 | Request lacks valid authentication credentials        | 401             | `UNAUTHENTICATED`         |
+| `forbidden(?string $description = null)`                                                    | Authenticated caller lacks required permissions       | 403             | `INSUFFICIENT_PRIVILEGES` |
+| `notFound(?string $description = null)`                                                     | Requested resource does not exist                     | 404             | `RESOURCE_NOT_FOUND`      |
+| `notAllowed(?string $description = null)`                                                   | HTTP method not allowed for the resource               | 405             | `NOT_ALLOWED`             |
+| `serverError(?string $description = null)`                                                  | Unexpected server error occurred                      | 500             | `SERVER_ERROR`            |
+| `notImplemented(?string $description = null)`                                               | Requested functionality has not been implemented      | 501             | `NOT_IMPLEMENTED`         |
 
 > **Note:** When the `description` parameter is `null`, the `description` field is omitted entirely from the error response. API consumers should treat `description` as an optional field.
 
 For full control over the payload, call `json(ActionPayloadInterface $payload)` directly.
+
+Use `document()` when an external specification requires fields at the root of
+the response rather than inside the usual `data` envelope:
+
+```php
+return $this->document(
+    ['active' => false],
+    headers: ['Cache-Control' => 'no-store'],
+);
+```
 
 ## Request helpers
 
