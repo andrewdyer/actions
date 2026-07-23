@@ -49,6 +49,35 @@ trait RespondsWithJson
     }
 
     /**
+     * Responds with a direct JSON document without an action-payload envelope.
+     *
+     * @param mixed                          $data       The value to JSON-encode.
+     * @param int                            $statusCode The HTTP status code.
+     * @param array<string, string|string[]> $headers    Additional response headers.
+     *
+     * @throws JsonException When the document cannot be JSON-encoded.
+     *
+     * @return ResponseInterface The JSON document response.
+     */
+    protected function document(
+        mixed $data,
+        int $statusCode = 200,
+        array $headers = [],
+    ): ResponseInterface {
+        $json = json_encode($data, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+        $this->response->getBody()->write($json);
+        $response = $this->response
+            ->withHeader('Content-Type', 'application/json; charset=utf-8')
+            ->withStatus($statusCode);
+
+        foreach ($headers as $name => $value) {
+            $response = $response->withHeader($name, $value);
+        }
+
+        return $response;
+    }
+
+    /**
      * Responds with a 403 Forbidden JSON error payload.
      *
      * @param string|null $description An optional human-readable description of the error.
